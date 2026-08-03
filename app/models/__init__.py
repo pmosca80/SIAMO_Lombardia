@@ -5,6 +5,12 @@ tramite `Base.metadata`.
 """
 
 from app.models.base import Base, TenantMixin, TimestampMixin
+from app.models.comunicazione import (
+    CanaleComunicazione,
+    Comunicazione,
+    StatoComunicazione,
+)
+from app.models.membro import Membro, RuoloMembro
 from app.models.organizzazione import Organizzazione
 
 __all__ = [
@@ -12,4 +18,9 @@ __all__ = [
     "TenantMixin",
     "TimestampMixin",
     "Organizzazione",
+    "Membro",
+    "RuoloMembro",
+    "Comunicazione",
+    "CanaleComunicazione",
+    "StatoComunicazione",
 ]

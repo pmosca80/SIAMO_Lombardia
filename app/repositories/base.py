@@ -39,3 +39,39 @@ class BaseRepository(Generic[ModelType]):
     async def delete(self, instance: ModelType) -> None:
         await self.session.delete(instance)
         await self.session.flush()
+
+
+class TenantRepository(BaseRepository[ModelType]):
+    """Repository per entità multi-tenant.
+
+    Ogni operazione è vincolata a `organizzazione_id`: le letture filtrano per
+    tenant e le scritture impostano il tenant sull'istanza. In questo modo
+    l'isolamento è garantito a livello di data-access, non demandato ai layer
+    superiori.
+    """
+
+    def __init__(self, session: AsyncSession, organizzazione_id: int) -> None:
+        super().__init__(session)
+        self.organizzazione_id = organizzazione_id
+
+    async def get(self, id_: int) -> ModelType | None:
+        result = await self.session.execute(
+            select(self.model).where(
+                self.model.id == id_,
+                self.model.organizzazione_id == self.organizzazione_id,
+            )
+        )
+        return result.scalar_one_or_none()
+
+    async def list(self, *, limit: int = 100, offset: int = 0) -> list[ModelType]:
+        result = await self.session.execute(
+            select(self.model)
+            .where(self.model.organizzazione_id == self.organizzazione_id)
+            .limit(limit)
+            .offset(offset)
+        )
+        return list(result.scalars().all())
+
+    async def add(self, instance: ModelType) -> ModelType:
+        instance.organizzazione_id = self.organizzazione_id
+        return await super().add(instance)

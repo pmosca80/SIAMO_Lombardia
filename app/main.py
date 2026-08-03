@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
 from app.core.config import settings
-from app.routers import organizzazione
+from app.routers import comunicazione, membro, organizzazione
 
 app = FastAPI(
     title=settings.app_name,
@@ -9,6 +9,8 @@ app = FastAPI(
 )
 
 app.include_router(organizzazione.router)
+app.include_router(membro.router)
+app.include_router(comunicazione.router)
 
 
 @app.get("/health", tags=["system"])
