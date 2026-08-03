@@ -1,7 +1,9 @@
 from fastapi import HTTPException, status
 
 from app.models.organizzazione import Organizzazione
+from app.models.utente import RuoloUtente, Utente
 from app.repositories.organizzazione import OrganizzazioneRepository
+from app.repositories.utente import UtenteRepository
 from app.schemas.organizzazione import OrganizzazioneCreate, OrganizzazioneUpdate
 
 
@@ -17,8 +19,25 @@ class OrganizzazioneService:
                 status_code=status.HTTP_409_CONFLICT,
                 detail=f"Slug '{dati.slug}' già in uso.",
             )
-        organizzazione = Organizzazione(**dati.model_dump())
-        return await self.repository.add(organizzazione)
+        dati_org = dati.model_dump(
+            exclude={"admin_nome", "admin_cognome", "admin_email"}
+        )
+        organizzazione = await self.repository.add(Organizzazione(**dati_org))
+
+        # Senza un utente non c'è modo di autenticarsi (login via magic
+        # link) per gestire il tenant appena creato: se richiesto, il primo
+        # amministratore viene creato contestualmente.
+        if dati.admin_email is not None:
+            utenti = UtenteRepository(self.repository.session, organizzazione.id)
+            await utenti.add(
+                Utente(
+                    nome=dati.admin_nome,
+                    cognome=dati.admin_cognome,
+                    email=dati.admin_email,
+                    ruolo=RuoloUtente.AMMINISTRATORE,
+                )
+            )
+        return organizzazione
 
     async def get(self, id_: int) -> Organizzazione:
         organizzazione = await self.repository.get(id_)

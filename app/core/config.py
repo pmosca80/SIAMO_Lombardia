@@ -20,6 +20,18 @@ class Settings(BaseSettings):
     # Su Railway viene iniettata come `DATABASE_URL` dal servizio Postgres.
     database_url: str
 
+    # --- Autenticazione JWT ---
+    # In produzione DEVE essere impostata via variabile d'ambiente `JWT_SECRET_KEY`.
+    jwt_secret_key: str = "dev-secret-change-me"
+    jwt_algorithm: str = "HS256"
+    access_token_expire_minutes: int = 15
+    refresh_token_expire_days: int = 30
+    magic_link_expire_minutes: int = 15
+
+    # Base URL del frontend che completa il login (pagina che legge `?token=`
+    # e chiama `POST /auth/verify`).
+    frontend_base_url: str = "http://localhost:5173"
+
     @field_validator("database_url")
     @classmethod
     def _force_async_driver(cls, value: str) -> str:

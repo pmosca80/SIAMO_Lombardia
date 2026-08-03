@@ -2,11 +2,27 @@ import pytest_asyncio
 
 
 @pytest_asyncio.fixture
-async def contesto(client):
-    """Organizzazione + utente autore, pronti per creare comunicazioni."""
+async def contesto(client, autentica):
+    """Organizzazione + utente autore, pronti per creare comunicazioni.
+
+    Il client resta autenticato come amministratore dell'organizzazione
+    creata: le chiamate successive nel test sono già autorizzate.
+    """
     org = (
-        await client.post("/organizzazioni", json={"nome": "Assoc", "slug": "assoc"})
+        await client.post(
+            "/organizzazioni",
+            json={
+                "nome": "Assoc",
+                "slug": "assoc",
+                "admin_nome": "Admin",
+                "admin_cognome": "Test",
+                "admin_email": "admin@assoc.example.com",
+            },
+        )
     ).json()
+    token = await autentica(organizzazione_id=org["id"], email="admin@assoc.example.com")
+    client.headers["Authorization"] = f"Bearer {token}"
+
     utente = (
         await client.post(
             f"/organizzazioni/{org['id']}/utenti",
@@ -83,8 +99,9 @@ async def test_comunicazione_isolata_per_tenant(client, contesto):
         )
     ).json()
 
-    # non raggiungibile da un altro tenant
+    # il token autentica per `org`: richiedere il path di un altro tenant è
+    # respinto subito (403), senza nemmeno interrogare il repository.
     resp = await client.get(
         f"/organizzazioni/{altra['id']}/comunicazioni/{com['id']}"
     )
-    assert resp.status_code == 404
+    assert resp.status_code == 403

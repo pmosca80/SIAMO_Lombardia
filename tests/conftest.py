@@ -10,6 +10,10 @@ import os
 # Deve avvenire prima di importare qualsiasi modulo dell'app: `Settings`
 # richiede DATABASE_URL già al momento dell'import.
 os.environ.setdefault("DATABASE_URL", "sqlite+aiosqlite:///:memory:")
+os.environ.setdefault("JWT_SECRET_KEY", "test-secret-key-non-per-produzione")
+# In debug l'endpoint /auth/magic-link espone il link generato nella risposta
+# (nessun invio email reale nei test): è così che i test recuperano il token.
+os.environ.setdefault("DEBUG", "true")
 
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
@@ -69,10 +73,52 @@ async def client(engine):
 
 
 @pytest_asyncio.fixture
-async def organizzazione(client):
-    """Crea un'organizzazione di supporto e ne restituisce la rappresentazione."""
+async def autentica(client):
+    """Factory fixture: esegue il login via magic link e ritorna l'access token.
+
+    Passa dal flusso HTTP reale (`/auth/magic-link` + `/auth/verify`) invece
+    di generare il token direttamente, così i test esercitano lo stesso
+    percorso usato in produzione.
+    """
+
+    async def _autentica(*, organizzazione_id: int, email: str) -> str:
+        resp = await client.post(
+            "/auth/magic-link",
+            json={"organizzazione_id": organizzazione_id, "email": email},
+        )
+        assert resp.status_code == 200, resp.text
+        debug_link = resp.json()["debug_link"]
+        assert debug_link is not None, "debug_link assente: DEBUG non è true nei test?"
+        token = debug_link.split("token=", 1)[1]
+
+        resp = await client.post("/auth/verify", json={"token": token})
+        assert resp.status_code == 200, resp.text
+        return resp.json()["access_token"]
+
+    return _autentica
+
+
+@pytest_asyncio.fixture
+async def organizzazione(client, autentica):
+    """Crea un'organizzazione con il primo utente amministratore, effettua il
+    login e imposta l'header `Authorization` di default sul client di test:
+    le chiamate successive nel test sono così già autenticate come admin.
+    """
     resp = await client.post(
-        "/organizzazioni", json={"nome": "Associazione Test", "slug": "assoc-test"}
+        "/organizzazioni",
+        json={
+            "nome": "Associazione Test",
+            "slug": "assoc-test",
+            "admin_nome": "Admin",
+            "admin_cognome": "Test",
+            "admin_email": "admin@assoc-test.example.com",
+        },
     )
     assert resp.status_code == 201, resp.text
-    return resp.json()
+    org = resp.json()
+
+    token = await autentica(
+        organizzazione_id=org["id"], email="admin@assoc-test.example.com"
+    )
+    client.headers["Authorization"] = f"Bearer {token}"
+    return org

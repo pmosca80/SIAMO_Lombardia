@@ -6,3 +6,4 @@ alembic==1.18.5
 pydantic[email]==2.13.4
 pydantic-settings==2.14.2
 python-dotenv==1.0.1
+pyjwt==2.10.1
