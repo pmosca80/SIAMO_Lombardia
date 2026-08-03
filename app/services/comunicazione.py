@@ -20,7 +20,7 @@ class ComunicazioneService:
     async def _valida_autore(self, autore_id: int | None) -> None:
         if autore_id is not None and await self.membri.get(autore_id) is None:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                 detail="Autore non valido: nessun membro con questo id nell'organizzazione.",
             )
 
