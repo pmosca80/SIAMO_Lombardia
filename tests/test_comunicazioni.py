@@ -3,21 +3,21 @@ import pytest_asyncio
 
 @pytest_asyncio.fixture
 async def contesto(client):
-    """Organizzazione + membro autore, pronti per creare comunicazioni."""
+    """Organizzazione + utente autore, pronti per creare comunicazioni."""
     org = (
         await client.post("/organizzazioni", json={"nome": "Assoc", "slug": "assoc"})
     ).json()
-    membro = (
+    utente = (
         await client.post(
-            f"/organizzazioni/{org['id']}/membri",
+            f"/organizzazioni/{org['id']}/utenti",
             json={"nome": "Autore", "cognome": "Re", "email": "autore@example.com"},
         )
     ).json()
-    return org, membro
+    return org, utente
 
 
 async def test_ciclo_di_vita_comunicazione(client, contesto):
-    org, membro = contesto
+    org, utente = contesto
     oid = org["id"]
 
     resp = await client.post(
@@ -25,7 +25,7 @@ async def test_ciclo_di_vita_comunicazione(client, contesto):
         json={
             "titolo": "Assemblea",
             "corpo": "Convocazione assemblea ordinaria.",
-            "autore_id": membro["id"],
+            "autore_id": utente["id"],
         },
     )
     assert resp.status_code == 201, resp.text
@@ -57,6 +57,15 @@ async def test_autore_non_valido_rifiutato(client, contesto):
     resp = await client.post(
         f"/organizzazioni/{org['id']}/comunicazioni",
         json={"titolo": "T", "corpo": "C", "autore_id": 9999},
+    )
+    assert resp.status_code == 422
+
+
+async def test_campagna_non_valida_rifiutata(client, contesto):
+    org, _ = contesto
+    resp = await client.post(
+        f"/organizzazioni/{org['id']}/comunicazioni",
+        json={"titolo": "T", "corpo": "C", "campagna_id": 9999},
     )
     assert resp.status_code == 422
 

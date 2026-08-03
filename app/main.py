@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
 from app.core.config import settings
-from app.routers import comunicazione, membro, organizzazione
+from app.routers import comunicazione, organizzazione, utente
 
 app = FastAPI(
     title=settings.app_name,
@@ -9,7 +9,7 @@ app = FastAPI(
 )
 
 app.include_router(organizzazione.router)
-app.include_router(membro.router)
+app.include_router(utente.router)
 app.include_router(comunicazione.router)
 
 

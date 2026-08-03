@@ -36,6 +36,16 @@ async def engine():
 
 
 @pytest_asyncio.fixture
+async def db_session(engine):
+    """Sessione ORM diretta sull'engine di test (per i test a livello di modello)."""
+    TestSession = async_sessionmaker(
+        engine, class_=AsyncSession, expire_on_commit=False
+    )
+    async with TestSession() as session:
+        yield session
+
+
+@pytest_asyncio.fixture
 async def client(engine):
     """AsyncClient httpx collegato all'app via ASGI, con sessione di test."""
     TestSession = async_sessionmaker(

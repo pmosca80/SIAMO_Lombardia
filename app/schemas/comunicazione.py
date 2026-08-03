@@ -9,6 +9,7 @@ class ComunicazioneBase(BaseModel):
     titolo: str = Field(..., max_length=255)
     corpo: str = Field(..., min_length=1)
     canale: CanaleComunicazione = CanaleComunicazione.EMAIL
+    campagna_id: int | None = None
     autore_id: int | None = None
 
 
@@ -20,6 +21,7 @@ class ComunicazioneUpdate(BaseModel):
     titolo: str | None = Field(default=None, max_length=255)
     corpo: str | None = Field(default=None, min_length=1)
     canale: CanaleComunicazione | None = None
+    campagna_id: int | None = None
     autore_id: int | None = None
 
 

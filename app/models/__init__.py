@@ -1,26 +1,33 @@
 """Registro dei modelli ORM.
 
-Importare qui ogni nuovo modello così che Alembic (autogenerate) lo veda
-tramite `Base.metadata`.
+Importare qui ogni nuovo modello così che Alembic (autogenerate) e la
+configurazione dei mapper lo vedano tramite `Base.metadata`.
 """
 
 from app.models.base import Base, TenantMixin, TimestampMixin
+from app.models.campagna import Campagna, StatoCampagna
 from app.models.comunicazione import (
     CanaleComunicazione,
     Comunicazione,
     StatoComunicazione,
 )
-from app.models.membro import Membro, RuoloMembro
+from app.models.documento import Documento
+from app.models.lettura import Lettura
 from app.models.organizzazione import Organizzazione
+from app.models.utente import RuoloUtente, Utente
 
 __all__ = [
     "Base",
     "TenantMixin",
     "TimestampMixin",
     "Organizzazione",
-    "Membro",
-    "RuoloMembro",
+    "Utente",
+    "RuoloUtente",
+    "Campagna",
+    "StatoCampagna",
     "Comunicazione",
     "CanaleComunicazione",
     "StatoComunicazione",
+    "Documento",
+    "Lettura",
 ]

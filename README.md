@@ -19,6 +19,20 @@ alembic/            # migrazioni (env.py già configurato per engine async)
 
 Flusso di una richiesta: **router → service → repository → DB**.
 
+## Modello dati
+
+Sei entità, tutte tenant-scoped tranne l'organizzazione (radice):
+
+- **organizzazioni** — il tenant. Eliminandola, cascata su tutto (`ON DELETE CASCADE`).
+- **utenti** — persone dell'associazione (ruolo: amministratore/operatore/socio);
+  email unica per organizzazione.
+- **campagne** — raggruppano comunicazioni; nome unico per organizzazione.
+- **comunicazioni** — messaggi; opzionalmente legate a una campagna e a un
+  utente autore (`ON DELETE SET NULL`); stato bozza → inviata.
+- **documenti** — allegati o libreria documentale; legame opzionale alla
+  comunicazione (`SET NULL`).
+- **letture** — ricevute di lettura: coppia (comunicazione, utente) unica.
+
 ## Multi-tenancy
 
 Il tenant è l'**Organizzazione**. La colonna `organizzazione_id` da propagare
@@ -26,8 +40,8 @@ su tutte le tabelle future vive in un unico punto: `TenantMixin`
 ([app/models/base.py](app/models/base.py)). Ogni nuovo modello la eredita:
 
 ```python
-class Comunicazione(Base, TenantMixin, TimestampMixin):
-    __tablename__ = "comunicazioni"
+class Utente(Base, TenantMixin, TimestampMixin):
+    __tablename__ = "utenti"
     id: Mapped[int] = mapped_column(primary_key=True)
     # organizzazione_id è già presente, indicizzata e con FK a organizzazioni
 ```

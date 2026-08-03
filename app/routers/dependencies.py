@@ -4,12 +4,13 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_session
+from app.repositories.campagna import CampagnaRepository
 from app.repositories.comunicazione import ComunicazioneRepository
-from app.repositories.membro import MembroRepository
 from app.repositories.organizzazione import OrganizzazioneRepository
+from app.repositories.utente import UtenteRepository
 from app.services.comunicazione import ComunicazioneService
-from app.services.membro import MembroService
 from app.services.organizzazione import OrganizzazioneService
+from app.services.utente import UtenteService
 
 SessionDep = Annotated[AsyncSession, Depends(get_session)]
 
@@ -43,11 +44,11 @@ TenantId = Annotated[int, Depends(get_tenant_id)]
 
 # --- Entità tenant-scoped -------------------------------------------------
 
-def get_membro_service(session: SessionDep, tenant_id: TenantId) -> MembroService:
-    return MembroService(MembroRepository(session, tenant_id))
+def get_utente_service(session: SessionDep, tenant_id: TenantId) -> UtenteService:
+    return UtenteService(UtenteRepository(session, tenant_id))
 
 
-MembroServiceDep = Annotated[MembroService, Depends(get_membro_service)]
+UtenteServiceDep = Annotated[UtenteService, Depends(get_utente_service)]
 
 
 def get_comunicazione_service(
@@ -56,7 +57,8 @@ def get_comunicazione_service(
 ) -> ComunicazioneService:
     return ComunicazioneService(
         ComunicazioneRepository(session, tenant_id),
-        MembroRepository(session, tenant_id),
+        UtenteRepository(session, tenant_id),
+        CampagnaRepository(session, tenant_id),
     )
 
 

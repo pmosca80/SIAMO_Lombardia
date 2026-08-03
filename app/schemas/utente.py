@@ -2,29 +2,29 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
-from app.models.membro import RuoloMembro
+from app.models.utente import RuoloUtente
 
 
-class MembroBase(BaseModel):
+class UtenteBase(BaseModel):
     nome: str = Field(..., max_length=120)
     cognome: str = Field(..., max_length=120)
     email: EmailStr
-    ruolo: RuoloMembro = RuoloMembro.SOCIO
+    ruolo: RuoloUtente = RuoloUtente.SOCIO
     attivo: bool = True
 
 
-class MembroCreate(MembroBase):
+class UtenteCreate(UtenteBase):
     pass
 
 
-class MembroUpdate(BaseModel):
+class UtenteUpdate(BaseModel):
     nome: str | None = Field(default=None, max_length=120)
     cognome: str | None = Field(default=None, max_length=120)
-    ruolo: RuoloMembro | None = None
+    ruolo: RuoloUtente | None = None
     attivo: bool | None = None
 
 
-class MembroRead(MembroBase):
+class UtenteRead(UtenteBase):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
