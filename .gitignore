@@ -25,3 +25,6 @@ env/
 .coverage
 htmlcov/
 .venv/
+
+# DB locale di sviluppo (SQLite)
+*.db

@@ -32,6 +32,16 @@ class Settings(BaseSettings):
     # e chiama `POST /auth/verify`).
     frontend_base_url: str = "http://localhost:5173"
 
+    # --- Invio email (Brevo SMTP relay) ---
+    # Se `smtp_password` non è impostata, si usa il backend di sviluppo che
+    # logga il link invece di inviarlo (vedi `app/core/email.py`).
+    smtp_host: str = "smtp-relay.brevo.com"
+    smtp_port: int = 587
+    smtp_login: str | None = None
+    smtp_password: str | None = None
+    email_from: str | None = None
+    email_from_name: str = "SIAMO Lombardia"
+
     @field_validator("database_url")
     @classmethod
     def _force_async_driver(cls, value: str) -> str:
