@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Segoe UI", system-ui, Roboto, sans-serif;
+
+  /* Blu S.I.A.M.O. Esercito, dal logo */
+  --color-brand-50: #eef3fb;
+  --color-brand-100: #d7e3f5;
+  --color-brand-200: #b0c8ec;
+  --color-brand-300: #80a5df;
+  --color-brand-400: #4c7dd0;
+  --color-brand-500: #2a5cb8;
+  --color-brand-600: #1d4a9e;
+  --color-brand-700: #193c80;
+  --color-brand-800: #16336a;
+  --color-brand-900: #0f2246;
+  --color-brand-950: #0a1731;
+
+  /* Tricolore, usato come accento puntuale (badge, stati) */
+  --color-tricolore-verde: #2e7d46;
+  --color-tricolore-rosso: #c8352f;
+
+  --color-silver-100: #f3f4f6;
+  --color-silver-200: #e2e5e9;
+  --color-silver-300: #c9cfd6;
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+  }
+
+  body {
+    @apply bg-silver-100 text-brand-950 antialiased;
+  }
+}
