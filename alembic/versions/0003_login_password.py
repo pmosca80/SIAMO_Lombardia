@@ -52,12 +52,22 @@ def upgrade() -> None:
                 op.drop_index(nome_indice, table_name="magic_link_tokens")
         op.drop_table("magic_link_tokens")
 
-    # `checkfirst=True` rende la creazione del tipo idempotente. Il tipo
-    # passato alla colonna ha `create_type=False`: senza, `create_table`
-    # proverebbe a ricrearlo una seconda volta, fallendo su "already exists"
-    # anche quando il tipo è stato appena creato correttamente qui sopra.
-    tipo_token_azione = sa.Enum("verifica_email", "reset_password", name="tipo_token_azione")
-    tipo_token_azione.create(bind, checkfirst=True)
+    # Creazione del tipo idempotente. Su Postgres un blocco DO con except
+    # esplicito è l'unico modo davvero affidabile: `Enum.create(checkfirst=True)`
+    # e `create_type=False` sulla colonna non bastano a impedire che
+    # `create_table` provi comunque a ricrearlo (fallendo su "already exists").
+    if bind.dialect.name == "postgresql":
+        bind.execute(
+            sa.text(
+                "DO $$ BEGIN "
+                "CREATE TYPE tipo_token_azione AS ENUM ('verifica_email', 'reset_password'); "
+                "EXCEPTION WHEN duplicate_object THEN NULL; END $$;"
+            )
+        )
+    else:
+        sa.Enum(
+            "verifica_email", "reset_password", name="tipo_token_azione"
+        ).create(bind, checkfirst=True)
 
     if not inspector.has_table("token_azione"):
         op.create_table(
