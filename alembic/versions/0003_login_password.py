@@ -18,6 +18,7 @@ from typing import Sequence, Union
 
 import sqlalchemy as sa
 from alembic import op
+from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision: str = "0003_login_password"
@@ -70,20 +71,26 @@ def upgrade() -> None:
         ).create(bind, checkfirst=True)
 
     if not inspector.has_table("token_azione"):
+        # `create_type=False` è rispettato in modo affidabile solo sulla
+        # classe dialect-specific `postgresql.ENUM`: su `sa.Enum` generico
+        # `create_table` lo ignora e prova comunque a ricreare il tipo.
+        if bind.dialect.name == "postgresql":
+            tipo_colonna = postgresql.ENUM(
+                "verifica_email",
+                "reset_password",
+                name="tipo_token_azione",
+                create_type=False,
+            )
+        else:
+            tipo_colonna = sa.Enum(
+                "verifica_email", "reset_password", name="tipo_token_azione"
+            )
+
         op.create_table(
             "token_azione",
             sa.Column("id", sa.Integer(), nullable=False),
             sa.Column("utente_id", sa.Integer(), nullable=False),
-            sa.Column(
-                "tipo",
-                sa.Enum(
-                    "verifica_email",
-                    "reset_password",
-                    name="tipo_token_azione",
-                    create_type=False,
-                ),
-                nullable=False,
-            ),
+            sa.Column("tipo", tipo_colonna, nullable=False),
             sa.Column("token_hash", sa.String(length=64), nullable=False),
             sa.Column("scade_at", sa.DateTime(timezone=True), nullable=False),
             sa.Column("usato_at", sa.DateTime(timezone=True), nullable=True),
