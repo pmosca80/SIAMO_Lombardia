@@ -3,6 +3,9 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Layout } from "@/components/Layout";
 import { LoginPage } from "@/pages/LoginPage";
+import { RegisterPage } from "@/pages/RegisterPage";
+import { ForgotPasswordPage } from "@/pages/ForgotPasswordPage";
+import { ResetPasswordPage } from "@/pages/ResetPasswordPage";
 import { VerificaPage } from "@/pages/VerificaPage";
 import { DashboardPage } from "@/pages/DashboardPage";
 import { SociPage } from "@/pages/SociPage";
@@ -22,7 +25,10 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/auth/verifica" element={<VerificaPage />} />
+        <Route path="/registrati" element={<RegisterPage />} />
+        <Route path="/password-dimenticata" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/auth/verifica-email" element={<VerificaPage />} />
 
         <Route
           path="/"

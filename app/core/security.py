@@ -10,6 +10,7 @@ import uuid
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 
+import bcrypt
 import jwt
 from fastapi import HTTPException, status
 from pydantic import BaseModel
@@ -79,6 +80,18 @@ def decode_access_token(token: str) -> TokenPayload:
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token non valido.",
         )
+
+
+def hash_password(password: str) -> str:
+    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
+
+def verifica_password(password: str, password_hash: str) -> bool:
+    try:
+        return bcrypt.checkpw(password.encode("utf-8"), password_hash.encode("utf-8"))
+    except ValueError:
+        # Hash malformato/di formato inatteso: non è una password valida.
+        return False
 
 
 def genera_token_opaco() -> str:

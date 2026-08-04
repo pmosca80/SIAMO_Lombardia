@@ -11,9 +11,14 @@ import os
 # richiede DATABASE_URL già al momento dell'import.
 os.environ.setdefault("DATABASE_URL", "sqlite+aiosqlite:///:memory:")
 os.environ.setdefault("JWT_SECRET_KEY", "test-secret-key-non-per-produzione")
-# In debug l'endpoint /auth/magic-link espone il link generato nella risposta
-# (nessun invio email reale nei test): è così che i test recuperano il token.
 os.environ.setdefault("DEBUG", "true")
+# I test devono restare deterministici e offline: forzano il backend email di
+# log anche se il `.env` locale ha credenziali reali di Resend/Brevo.
+os.environ["RESEND_API_KEY"] = ""
+os.environ["SMTP_PASSWORD"] = ""
+
+# Password di default usata dalle fixture per gli utenti di test.
+PASSWORD_TEST = "Password123!"
 
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
@@ -74,24 +79,13 @@ async def client(engine):
 
 @pytest_asyncio.fixture
 async def autentica(client):
-    """Factory fixture: esegue il login via magic link e ritorna l'access token.
+    """Factory fixture: esegue il login email+password e ritorna l'access token."""
 
-    Passa dal flusso HTTP reale (`/auth/magic-link` + `/auth/verify`) invece
-    di generare il token direttamente, così i test esercitano lo stesso
-    percorso usato in produzione.
-    """
-
-    async def _autentica(*, organizzazione_id: int, email: str) -> str:
+    async def _autentica(*, organizzazione_id: int, email: str, password: str = PASSWORD_TEST) -> str:
         resp = await client.post(
-            "/auth/magic-link",
-            json={"organizzazione_id": organizzazione_id, "email": email},
+            "/auth/login",
+            json={"organizzazione_id": organizzazione_id, "email": email, "password": password},
         )
-        assert resp.status_code == 200, resp.text
-        debug_link = resp.json()["debug_link"]
-        assert debug_link is not None, "debug_link assente: DEBUG non è true nei test?"
-        token = debug_link.split("token=", 1)[1]
-
-        resp = await client.post("/auth/verify", json={"token": token})
         assert resp.status_code == 200, resp.text
         return resp.json()["access_token"]
 
@@ -112,6 +106,7 @@ async def organizzazione(client, autentica):
             "admin_nome": "Admin",
             "admin_cognome": "Test",
             "admin_email": "admin@assoc-test.example.com",
+            "admin_password": PASSWORD_TEST,
         },
     )
     assert resp.status_code == 201, resp.text

@@ -1,5 +1,6 @@
 from fastapi import HTTPException, status
 
+from app.core.security import hash_password
 from app.models.organizzazione import Organizzazione
 from app.models.utente import RuoloUtente, Utente
 from app.repositories.organizzazione import OrganizzazioneRepository
@@ -20,13 +21,13 @@ class OrganizzazioneService:
                 detail=f"Slug '{dati.slug}' già in uso.",
             )
         dati_org = dati.model_dump(
-            exclude={"admin_nome", "admin_cognome", "admin_email"}
+            exclude={"admin_nome", "admin_cognome", "admin_email", "admin_password"}
         )
         organizzazione = await self.repository.add(Organizzazione(**dati_org))
 
-        # Senza un utente non c'è modo di autenticarsi (login via magic
-        # link) per gestire il tenant appena creato: se richiesto, il primo
-        # amministratore viene creato contestualmente.
+        # Senza un utente non c'è modo di autenticarsi (login) per gestire il
+        # tenant appena creato: se richiesto, il primo amministratore viene
+        # creato contestualmente, già verificato e con password impostata.
         if dati.admin_email is not None:
             utenti = UtenteRepository(self.repository.session, organizzazione.id)
             await utenti.add(
@@ -35,6 +36,8 @@ class OrganizzazioneService:
                     cognome=dati.admin_cognome,
                     email=dati.admin_email,
                     ruolo=RuoloUtente.AMMINISTRATORE,
+                    password_hash=hash_password(dati.admin_password),
+                    email_verificato=True,
                 )
             )
         return organizzazione

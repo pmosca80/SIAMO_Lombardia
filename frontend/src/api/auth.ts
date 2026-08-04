@@ -1,17 +1,52 @@
 import { api } from "@/lib/api";
 import { organizzazioneId } from "@/lib/config";
-import type { MagicLinkRequestRead, TokenPair } from "@/types/api";
+import type { MessaggioGenerico, TokenPair } from "@/types/api";
 
-export async function richiediMagicLink(email: string): Promise<MagicLinkRequestRead> {
-  const { data } = await api.post<MagicLinkRequestRead>("/auth/magic-link", {
+export async function registrati(dati: {
+  nome: string;
+  cognome: string;
+  email: string;
+  password: string;
+}): Promise<MessaggioGenerico> {
+  const { data } = await api.post<MessaggioGenerico>("/auth/registrati", {
+    organizzazione_id: organizzazioneId,
+    ...dati,
+  });
+  return data;
+}
+
+export async function verificaEmail(token: string): Promise<TokenPair> {
+  const { data } = await api.post<TokenPair>("/auth/verifica-email", null, {
+    params: { token },
+  });
+  return data;
+}
+
+export async function login(email: string, password: string): Promise<TokenPair> {
+  const { data } = await api.post<TokenPair>("/auth/login", {
+    organizzazione_id: organizzazioneId,
+    email,
+    password,
+  });
+  return data;
+}
+
+export async function passwordDimenticata(email: string): Promise<MessaggioGenerico> {
+  const { data } = await api.post<MessaggioGenerico>("/auth/password-dimenticata", {
     organizzazione_id: organizzazioneId,
     email,
   });
   return data;
 }
 
-export async function verificaMagicLink(token: string): Promise<TokenPair> {
-  const { data } = await api.post<TokenPair>("/auth/verify", { token });
+export async function resetPassword(
+  token: string,
+  nuovaPassword: string,
+): Promise<MessaggioGenerico> {
+  const { data } = await api.post<MessaggioGenerico>("/auth/reset-password", {
+    token,
+    nuova_password: nuovaPassword,
+  });
   return data;
 }
 

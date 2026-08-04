@@ -14,7 +14,7 @@ class RefreshToken(Base, TenantMixin, TimestampMixin):
     """Refresh token opaco, con rotazione: ogni uso ne genera uno nuovo e
     revoca quello precedente (`revocato_at`).
 
-    Viene salvato solo l'hash SHA-256 del token, come per `MagicLinkToken`.
+    Viene salvato solo l'hash SHA-256 del token, come per `TokenAzione`.
     """
 
     __tablename__ = "refresh_tokens"

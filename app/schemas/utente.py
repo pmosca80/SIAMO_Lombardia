@@ -14,7 +14,9 @@ class UtenteBase(BaseModel):
 
 
 class UtenteCreate(UtenteBase):
-    pass
+    # Opzionale: senza password l'utente dovrà impostarne una tramite il
+    # flusso "password dimenticata" prima di poter accedere.
+    password: str | None = Field(default=None, min_length=8, max_length=128)
 
 
 class UtenteUpdate(BaseModel):

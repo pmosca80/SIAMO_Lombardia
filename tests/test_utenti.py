@@ -52,6 +52,7 @@ async def test_isolamento_tenant(client, autentica):
                 "admin_nome": "Admin",
                 "admin_cognome": "A",
                 "admin_email": "admin@org-a.example.com",
+                "admin_password": "Password123!",
             },
         )
     ).json()
@@ -64,6 +65,7 @@ async def test_isolamento_tenant(client, autentica):
                 "admin_nome": "Admin",
                 "admin_cognome": "B",
                 "admin_email": "admin@org-b.example.com",
+                "admin_password": "Password123!",
             },
         )
     ).json()

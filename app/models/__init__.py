@@ -13,9 +13,9 @@ from app.models.comunicazione import (
 )
 from app.models.documento import Documento
 from app.models.lettura import Lettura
-from app.models.magic_link_token import MagicLinkToken
 from app.models.organizzazione import Organizzazione
 from app.models.refresh_token import RefreshToken
+from app.models.token_azione import TipoTokenAzione, TokenAzione
 from app.models.utente import RuoloUtente, Utente
 
 __all__ = [
@@ -32,6 +32,7 @@ __all__ = [
     "StatoComunicazione",
     "Documento",
     "Lettura",
-    "MagicLinkToken",
+    "TokenAzione",
+    "TipoTokenAzione",
     "RefreshToken",
 ]

@@ -17,6 +17,7 @@ async def contesto(client, autentica):
                 "admin_nome": "Admin",
                 "admin_cognome": "Test",
                 "admin_email": "admin@assoc.example.com",
+                "admin_password": "Password123!",
             },
         )
     ).json()

@@ -42,6 +42,14 @@ class Utente(Base, TenantMixin, TimestampMixin):
     )
     attivo: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 
+    # Nullo finché l'utente non imposta una password (registrazione o "password
+    # dimenticata"): un amministratore può creare un utente senza password,
+    # che dovrà poi impostarne una tramite il flusso di reset.
+    password_hash: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    # True per gli utenti creati da un amministratore (già vetted). False solo
+    # per la registrazione libera, finché non si verifica l'indirizzo email.
+    email_verificato: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+
     organizzazione: Mapped["Organizzazione"] = relationship(back_populates="utenti")
     comunicazioni_create: Mapped[list["Comunicazione"]] = relationship(
         back_populates="autore",

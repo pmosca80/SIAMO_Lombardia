@@ -1,22 +1,34 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 from app.core.config import settings
 
 
-class MagicLinkRequest(BaseModel):
+class RegistrazioneRequest(BaseModel):
+    organizzazione_id: int
+    nome: str = Field(..., max_length=120)
+    cognome: str = Field(..., max_length=120)
+    email: EmailStr
+    password: str = Field(..., min_length=8, max_length=128)
+
+
+class MessaggioGenerico(BaseModel):
+    message: str
+
+
+class LoginRequest(BaseModel):
+    organizzazione_id: int
+    email: EmailStr
+    password: str
+
+
+class PasswordDimenticataRequest(BaseModel):
     organizzazione_id: int
     email: EmailStr
 
 
-class MagicLinkRequestRead(BaseModel):
-    message: str = "Se l'indirizzo è registrato, riceverai a breve un'email con il link di accesso."
-    # Popolato solo quando `debug=True`: nessun invio email reale è
-    # configurato in sviluppo, quindi il link viene restituito qui.
-    debug_link: str | None = None
-
-
-class MagicLinkVerify(BaseModel):
+class ResetPasswordRequest(BaseModel):
     token: str
+    nuova_password: str = Field(..., min_length=8, max_length=128)
 
 
 class RefreshRequest(BaseModel):

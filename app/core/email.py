@@ -22,18 +22,22 @@ logger = logging.getLogger("app.email")
 
 
 class EmailSender(Protocol):
-    async def invia_magic_link(self, *, email: str, link: str) -> None: ...
+    async def invia_verifica_email(self, *, email: str, link: str) -> None: ...
+    async def invia_reset_password(self, *, email: str, link: str) -> None: ...
 
 
 class LogEmailSender:
-    """Backend di sviluppo: logga il magic link invece di inviarlo via email."""
+    """Backend di sviluppo: logga il link invece di inviarlo via email."""
 
-    async def invia_magic_link(self, *, email: str, link: str) -> None:
-        logger.info("Magic link per %s: %s", email, link)
+    async def invia_verifica_email(self, *, email: str, link: str) -> None:
+        logger.info("Link di verifica email per %s: %s", email, link)
+
+    async def invia_reset_password(self, *, email: str, link: str) -> None:
+        logger.info("Link di reset password per %s: %s", email, link)
 
 
 class BrevoEmailSender:
-    """Invia il magic link via SMTP relay di Brevo (ex Sendinblue)."""
+    """Invia email via SMTP relay di Brevo (ex Sendinblue)."""
 
     def __init__(
         self,
@@ -52,52 +56,73 @@ class BrevoEmailSender:
         self.mittente = mittente
         self.mittente_nome = mittente_nome
 
-    async def invia_magic_link(self, *, email: str, link: str) -> None:
-        await asyncio.to_thread(self._invia_sync, email, link)
+    async def invia_verifica_email(self, *, email: str, link: str) -> None:
+        await asyncio.to_thread(
+            self._invia_sync,
+            email,
+            "Conferma il tuo indirizzo email — SIAMO Lombardia",
+            "Clicca sul link per attivare il tuo account (valido per un tempo limitato):\n\n"
+            f"{link}\n\n"
+            "Se non hai richiesto tu la registrazione, ignora questa email.",
+        )
 
-    def _invia_sync(self, email: str, link: str) -> None:
+    async def invia_reset_password(self, *, email: str, link: str) -> None:
+        await asyncio.to_thread(
+            self._invia_sync,
+            email,
+            "Reimposta la password — SIAMO Lombardia",
+            "Clicca sul link per reimpostare la password (valido per un tempo limitato):\n\n"
+            f"{link}\n\n"
+            "Se non hai richiesto tu il reset, ignora questa email.",
+        )
+
+    def _invia_sync(self, email: str, oggetto: str, corpo: str) -> None:
         messaggio = EmailMessage()
-        messaggio["Subject"] = "Il tuo link di accesso a SIAMO Lombardia"
+        messaggio["Subject"] = oggetto
         messaggio["From"] = f"{self.mittente_nome} <{self.mittente}>"
         messaggio["To"] = email
-        messaggio.set_content(
-            "Clicca sul link per accedere (valido per un tempo limitato):\n\n"
-            f"{link}\n\n"
-            "Se non hai richiesto tu l'accesso, ignora questa email."
-        )
+        messaggio.set_content(corpo)
 
         with smtplib.SMTP(self.host, self.port) as smtp:
             smtp.starttls()
             smtp.login(self.login, self.password)
             smtp.send_message(messaggio)
-        logger.info("Magic link inviato via Brevo a %s", email)
+        logger.info("Email inviata via Brevo a %s: %s", email, oggetto)
 
 
 class ResendEmailSender:
-    """Invia il magic link via Resend (https://resend.com)."""
+    """Invia email via Resend (https://resend.com)."""
 
     def __init__(self, *, api_key: str, mittente: str) -> None:
         self.api_key = api_key
         self.mittente = mittente
 
-    async def invia_magic_link(self, *, email: str, link: str) -> None:
-        await asyncio.to_thread(self._invia_sync, email, link)
+    async def invia_verifica_email(self, *, email: str, link: str) -> None:
+        await asyncio.to_thread(
+            self._invia_sync,
+            email,
+            "Conferma il tuo indirizzo email — SIAMO Lombardia",
+            "<p>Clicca sul link per attivare il tuo account (valido per un tempo limitato):</p>"
+            f'<p><a href="{link}">{link}</a></p>'
+            "<p>Se non hai richiesto tu la registrazione, ignora questa email.</p>",
+        )
 
-    def _invia_sync(self, email: str, link: str) -> None:
+    async def invia_reset_password(self, *, email: str, link: str) -> None:
+        await asyncio.to_thread(
+            self._invia_sync,
+            email,
+            "Reimposta la password — SIAMO Lombardia",
+            "<p>Clicca sul link per reimpostare la password (valido per un tempo limitato):</p>"
+            f'<p><a href="{link}">{link}</a></p>'
+            "<p>Se non hai richiesto tu il reset, ignora questa email.</p>",
+        )
+
+    def _invia_sync(self, email: str, oggetto: str, html: str) -> None:
         resend.api_key = self.api_key
         resend.Emails.send(
-            {
-                "from": self.mittente,
-                "to": [email],
-                "subject": "Il tuo link di accesso a SIAMO Lombardia",
-                "html": (
-                    "<p>Clicca sul link per accedere (valido per un tempo limitato):</p>"
-                    f'<p><a href="{link}">{link}</a></p>'
-                    "<p>Se non hai richiesto tu l'accesso, ignora questa email.</p>"
-                ),
-            }
+            {"from": self.mittente, "to": [email], "subject": oggetto, "html": html}
         )
-        logger.info("Magic link inviato via Resend a %s", email)
+        logger.info("Email inviata via Resend a %s: %s", email, oggetto)
 
 
 def get_email_sender() -> EmailSender:

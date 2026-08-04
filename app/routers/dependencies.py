@@ -9,9 +9,9 @@ from app.core.security import CurrentUser
 from app.models.utente import RuoloUtente
 from app.repositories.campagna import CampagnaRepository
 from app.repositories.comunicazione import ComunicazioneRepository
-from app.repositories.magic_link import MagicLinkRepository
 from app.repositories.organizzazione import OrganizzazioneRepository
 from app.repositories.refresh_token import RefreshTokenRepository
+from app.repositories.token_azione import TokenAzioneRepository
 from app.repositories.utente import UtenteRepository
 from app.services.auth import AuthService
 from app.services.comunicazione import ComunicazioneService
@@ -60,7 +60,7 @@ def require_ruoli(*ruoli: RuoloUtente):
 def get_auth_service(session: SessionDep) -> AuthService:
     return AuthService(
         session,
-        MagicLinkRepository(session),
+        TokenAzioneRepository(session),
         RefreshTokenRepository(session),
         get_email_sender(),
     )

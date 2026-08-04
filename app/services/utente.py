@@ -1,5 +1,6 @@
 from fastapi import HTTPException, status
 
+from app.core.security import hash_password
 from app.models.utente import Utente
 from app.repositories.utente import UtenteRepository
 from app.schemas.utente import UtenteCreate, UtenteUpdate
@@ -15,7 +16,10 @@ class UtenteService:
                 status_code=status.HTTP_409_CONFLICT,
                 detail=f"Email '{dati.email}' già registrata in questa organizzazione.",
             )
-        utente = Utente(**dati.model_dump())
+        dati_utente = dati.model_dump(exclude={"password"})
+        if dati.password is not None:
+            dati_utente["password_hash"] = hash_password(dati.password)
+        utente = Utente(**dati_utente)
         return await self.repository.add(utente)
 
     async def get(self, id_: int) -> Utente:

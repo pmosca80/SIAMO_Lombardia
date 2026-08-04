@@ -26,10 +26,9 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 15
     refresh_token_expire_days: int = 30
-    magic_link_expire_minutes: int = 15
 
-    # Base URL del frontend che completa il login (pagina che legge `?token=`
-    # e chiama `POST /auth/verify`).
+    # Base URL del frontend che completa i link inviati via email (verifica
+    # email, reset password).
     frontend_base_url: str = "http://localhost:5173"
 
     # --- Invio email ---

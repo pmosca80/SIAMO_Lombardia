@@ -11,18 +11,19 @@ class OrganizzazioneBase(BaseModel):
 
 class OrganizzazioneCreate(OrganizzazioneBase):
     # Se forniti, creano contestualmente il primo utente amministratore del
-    # tenant: senza un utente non esiste modo di autenticarsi (login via
-    # magic link) per gestire l'organizzazione appena creata.
+    # tenant: senza un utente non esiste modo di autenticarsi (login) per
+    # gestire l'organizzazione appena creata.
     admin_nome: str | None = Field(default=None, max_length=120)
     admin_cognome: str | None = Field(default=None, max_length=120)
     admin_email: EmailStr | None = None
+    admin_password: str | None = Field(default=None, min_length=8, max_length=128)
 
     @model_validator(mode="after")
     def _admin_completo_o_assente(self) -> "OrganizzazioneCreate":
-        campi = (self.admin_nome, self.admin_cognome, self.admin_email)
+        campi = (self.admin_nome, self.admin_cognome, self.admin_email, self.admin_password)
         if any(campi) and not all(campi):
             raise ValueError(
-                "admin_nome, admin_cognome e admin_email vanno forniti insieme."
+                "admin_nome, admin_cognome, admin_email e admin_password vanno forniti insieme."
             )
         return self
 

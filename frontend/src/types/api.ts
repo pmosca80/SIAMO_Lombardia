@@ -67,7 +67,6 @@ export interface TokenPair {
   expires_in: number;
 }
 
-export interface MagicLinkRequestRead {
+export interface MessaggioGenerico {
   message: string;
-  debug_link: string | null;
 }

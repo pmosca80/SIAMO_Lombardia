@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { verificaMagicLink } from "@/api/auth";
+import { verificaEmail } from "@/api/auth";
 import { useAuthStore } from "@/store/auth-store";
 import { Card, CardBody } from "@/components/ui/Card";
 
@@ -14,7 +14,7 @@ export function VerificaPage() {
   useEffect(() => {
     if (!token || richiesto.current) return;
     richiesto.current = true;
-    verificaMagicLink(token)
+    verificaEmail(token)
       .then((coppia) => {
         setTokens(coppia.access_token, coppia.refresh_token);
         setStato("ok");
@@ -37,7 +37,7 @@ export function VerificaPage() {
               </Link>
             </>
           ) : (
-            <p className="text-sm text-brand-950/70">Verifica dell'accesso in corso…</p>
+            <p className="text-sm text-brand-950/70">Verifica dell'email in corso…</p>
           )}
         </CardBody>
       </Card>

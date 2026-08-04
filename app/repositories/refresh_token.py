@@ -11,7 +11,7 @@ from app.models.utente import Utente
 class RefreshTokenRepository:
     """Repository per i refresh token.
 
-    Come `MagicLinkRepository`, la ricerca avviene per hash del token: al
+    Come `TokenAzioneRepository`, la ricerca avviene per hash del token: al
     momento del refresh il tenant non è ancora noto lato server.
     """
 

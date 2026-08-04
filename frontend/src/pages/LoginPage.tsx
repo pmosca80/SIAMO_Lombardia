@@ -1,7 +1,9 @@
-import { useState, type FormEvent } from "react";
-import { Navigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { richiediMagicLink } from "@/api/auth";
+import { login as loginRequest } from "@/api/auth";
+import { loginSchema, type LoginForm } from "@/lib/schemas";
 import { useAuthStore } from "@/store/auth-store";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -10,18 +12,22 @@ import logo from "@/assets/logo.jpg";
 import sfondo from "@/assets/sfondo.jpg";
 
 export function LoginPage() {
-  const [email, setEmail] = useState("");
   const accessToken = useAuthStore((s) => s.accessToken);
+  const setTokens = useAuthStore((s) => s.setTokens);
 
-  const mutation = useMutation({ mutationFn: richiediMagicLink });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginForm>({ resolver: zodResolver(loginSchema) });
+
+  const mutation = useMutation({
+    mutationFn: (dati: LoginForm) => loginRequest(dati.email, dati.password),
+    onSuccess: (coppia) => setTokens(coppia.access_token, coppia.refresh_token),
+  });
 
   if (accessToken) {
     return <Navigate to="/" replace />;
-  }
-
-  function handleSubmit(e: FormEvent) {
-    e.preventDefault();
-    mutation.mutate(email);
   }
 
   return (
@@ -37,43 +43,45 @@ export function LoginPage() {
             <p className="text-sm text-brand-950/60">Area riservata iscritti · Lombardia</p>
           </div>
 
-          {mutation.isSuccess ? (
-            <div className="w-full space-y-3 text-center">
-              <p className="text-sm text-brand-950">
-                Se l'indirizzo è registrato, riceverai a breve un'email con il link di accesso.
-              </p>
-              {mutation.data.debug_link && (
-                <a
-                  href={mutation.data.debug_link}
-                  className="block break-all rounded-md bg-brand-50 p-3 text-xs text-brand-700 underline"
-                >
-                  [dev] Apri magic link: {mutation.data.debug_link}
-                </a>
-              )}
-              <Button variant="ghost" size="sm" onClick={() => mutation.reset()}>
-                Usa un altro indirizzo
-              </Button>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="w-full space-y-3">
+          <form
+            onSubmit={handleSubmit((dati) => mutation.mutate(dati))}
+            className="w-full space-y-3"
+          >
+            <div>
               <Input
                 type="email"
-                required
                 autoFocus
                 placeholder="nome.cognome@email.it"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                {...register("email")}
               />
-              <Button type="submit" className="w-full" disabled={mutation.isPending}>
-                {mutation.isPending ? "Invio in corso…" : "Invia link di accesso"}
-              </Button>
-              {mutation.isError && (
-                <p className="text-center text-sm text-tricolore-rosso">
-                  Impossibile inviare il link. Riprova tra qualche istante.
-                </p>
+              {errors.email && (
+                <p className="mt-1 text-xs text-tricolore-rosso">{errors.email.message}</p>
               )}
-            </form>
-          )}
+            </div>
+            <div>
+              <Input type="password" placeholder="Password" {...register("password")} />
+              {errors.password && (
+                <p className="mt-1 text-xs text-tricolore-rosso">{errors.password.message}</p>
+              )}
+            </div>
+            <Button type="submit" className="w-full" disabled={mutation.isPending}>
+              {mutation.isPending ? "Accesso in corso…" : "Accedi"}
+            </Button>
+            {mutation.isError && (
+              <p className="text-center text-sm text-tricolore-rosso">
+                Email o password non corrette.
+              </p>
+            )}
+          </form>
+
+          <div className="flex w-full justify-between text-sm">
+            <Link to="/password-dimenticata" className="text-brand-600 underline">
+              Password dimenticata?
+            </Link>
+            <Link to="/registrati" className="text-brand-600 underline">
+              Registrati
+            </Link>
+          </div>
         </CardBody>
       </Card>
     </div>
