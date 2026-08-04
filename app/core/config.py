@@ -32,9 +32,15 @@ class Settings(BaseSettings):
     # e chiama `POST /auth/verify`).
     frontend_base_url: str = "http://localhost:5173"
 
-    # --- Invio email (Brevo SMTP relay) ---
-    # Se `smtp_password` non è impostata, si usa il backend di sviluppo che
-    # logga il link invece di inviarlo (vedi `app/core/email.py`).
+    # --- Invio email ---
+    # Priorità: Resend (se configurato) > Brevo SMTP > backend di sviluppo
+    # che logga il link invece di inviarlo (vedi `app/core/email.py`).
+    #
+    # Resend: nessun dominio proprio richiesto, `resend_from` di default usa
+    # il dominio resend.dev già autenticato da Resend stesso.
+    resend_api_key: str | None = None
+    resend_from: str = "SIAMO Lombardia <onboarding@resend.dev>"
+
     smtp_host: str = "smtp-relay.brevo.com"
     smtp_port: int = 587
     smtp_login: str | None = None
