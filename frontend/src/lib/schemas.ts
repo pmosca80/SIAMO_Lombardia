@@ -41,6 +41,7 @@ export const utenteCreateSchema = z.object({
   nome: z.string().min(1, "Obbligatorio").max(120),
   cognome: z.string().min(1, "Obbligatorio").max(120),
   email: z.email("Email non valida"),
+  numeroTessera: z.string().max(50).optional(),
   ruolo: z.enum(["amministratore", "operatore", "socio"]),
 });
 export type UtenteCreateForm = z.infer<typeof utenteCreateSchema>;

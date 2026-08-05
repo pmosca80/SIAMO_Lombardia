@@ -31,8 +31,15 @@ export function SociPage() {
   });
 
   async function onSubmit(dati: UtenteCreateForm) {
-    await creaUtente.mutateAsync({ ...dati, attivo: true });
-    reset({ nome: "", cognome: "", email: "", ruolo: "socio" });
+    await creaUtente.mutateAsync({
+      nome: dati.nome,
+      cognome: dati.cognome,
+      email: dati.email,
+      numero_tessera: dati.numeroTessera || null,
+      ruolo: dati.ruolo,
+      attivo: true,
+    });
+    reset({ nome: "", cognome: "", email: "", numeroTessera: "", ruolo: "socio" });
     setFormAperto(false);
   }
 
@@ -51,7 +58,7 @@ export function SociPage() {
         <Card>
           <CardHeader className="font-medium text-brand-950">Nuovo socio</CardHeader>
           <CardBody>
-            <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 gap-3 sm:grid-cols-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 gap-3 sm:grid-cols-5">
               <div>
                 <Input placeholder="Nome" {...register("nome")} />
                 {errors.nome && <p className="mt-1 text-xs text-tricolore-rosso">{errors.nome.message}</p>}
@@ -66,6 +73,12 @@ export function SociPage() {
                 <Input placeholder="Email" type="email" {...register("email")} />
                 {errors.email && <p className="mt-1 text-xs text-tricolore-rosso">{errors.email.message}</p>}
               </div>
+              <div>
+                <Input placeholder="Numero Tessera" {...register("numeroTessera")} />
+                {errors.numeroTessera && (
+                  <p className="mt-1 text-xs text-tricolore-rosso">{errors.numeroTessera.message}</p>
+                )}
+              </div>
               <select
                 className="h-10 rounded-md border border-silver-300 bg-white px-2 text-sm text-brand-950"
                 {...register("ruolo")}
@@ -74,7 +87,7 @@ export function SociPage() {
                 <option value="operatore">Operatore</option>
                 {eAmministratore && <option value="amministratore">Amministratore</option>}
               </select>
-              <div className="sm:col-span-4">
+              <div className="sm:col-span-5">
                 <Button type="submit" size="sm" disabled={creaUtente.isPending}>
                   {creaUtente.isPending ? "Salvataggio…" : "Crea socio"}
                 </Button>
@@ -91,6 +104,7 @@ export function SociPage() {
               <tr>
                 <th className="px-4 py-3 font-medium">Nome</th>
                 <th className="px-4 py-3 font-medium">Email</th>
+                <th className="px-4 py-3 font-medium">Tessera</th>
                 <th className="px-4 py-3 font-medium">Ruolo</th>
                 <th className="px-4 py-3 font-medium">Stato</th>
                 {puoGestire && <th className="px-4 py-3" />}
@@ -99,7 +113,7 @@ export function SociPage() {
             <tbody>
               {isLoading && (
                 <tr>
-                  <td className="px-4 py-4 text-brand-950/50" colSpan={5}>
+                  <td className="px-4 py-4 text-brand-950/50" colSpan={6}>
                     Caricamento…
                   </td>
                 </tr>
@@ -110,6 +124,7 @@ export function SociPage() {
                     {u.nome} {u.cognome}
                   </td>
                   <td className="px-4 py-3 text-brand-950/70">{u.email}</td>
+                  <td className="px-4 py-3 text-brand-950/70">{u.numero_tessera ?? "—"}</td>
                   <td className="px-4 py-3">
                     {puoGestire ? (
                       <select
