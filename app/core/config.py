@@ -47,6 +47,10 @@ class Settings(BaseSettings):
     email_from: str | None = None
     email_from_name: str = "SIAMO Lombardia"
 
+    # --- Error tracking ---
+    # Se non impostato, Sentry resta disattivato (es. in sviluppo locale).
+    sentry_dsn: str | None = None
+
     @field_validator("database_url")
     @classmethod
     def _force_async_driver(cls, value: str) -> str:
