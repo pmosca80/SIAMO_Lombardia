@@ -35,6 +35,10 @@ class Utente(Base, TenantMixin, TimestampMixin):
     nome: Mapped[str] = mapped_column(String(120), nullable=False)
     cognome: Mapped[str] = mapped_column(String(120), nullable=False)
     email: Mapped[str] = mapped_column(String(255), nullable=False)
+    # Obbligatorio nel form di autoregistrazione (vedi RegistrazioneRequest),
+    # ma nullo a livello di colonna: gli utenti creati da un amministratore
+    # (UtenteCreate) possono non averlo ancora assegnato.
+    numero_tessera: Mapped[str | None] = mapped_column(String(50), nullable=True)
     ruolo: Mapped[RuoloUtente] = mapped_column(
         Enum(RuoloUtente, name="ruolo_utente"),
         default=RuoloUtente.SOCIO,

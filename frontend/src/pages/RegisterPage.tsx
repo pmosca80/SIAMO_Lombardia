@@ -23,6 +23,7 @@ export function RegisterPage() {
         nome: dati.nome,
         cognome: dati.cognome,
         email: dati.email,
+        numeroTessera: dati.numeroTessera,
         password: dati.password,
       }),
   });
@@ -68,6 +69,12 @@ export function RegisterPage() {
                 <Input type="email" placeholder="nome.cognome@email.it" {...register("email")} />
                 {errors.email && (
                   <p className="mt-1 text-xs text-tricolore-rosso">{errors.email.message}</p>
+                )}
+              </div>
+              <div>
+                <Input placeholder="Numero Tessera" {...register("numeroTessera")} />
+                {errors.numeroTessera && (
+                  <p className="mt-1 text-xs text-tricolore-rosso">{errors.numeroTessera.message}</p>
                 )}
               </div>
               <div>

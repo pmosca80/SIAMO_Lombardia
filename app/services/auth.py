@@ -39,7 +39,16 @@ class AuthService:
         self.refresh_repo = refresh_repo
         self.email_sender = email_sender
 
-    async def registra(self, *, organizzazione_id: int, nome: str, cognome: str, email: str, password: str) -> None:
+    async def registra(
+        self,
+        *,
+        organizzazione_id: int,
+        nome: str,
+        cognome: str,
+        email: str,
+        numero_tessera: str,
+        password: str,
+    ) -> None:
         """Crea l'utente (inattivo, email non verificata) e invia il link di
         verifica. Non rivela se l'email è già in uso in questo tenant: la
         risposta è sempre generica lato router (anti-enumerazione)."""
@@ -52,6 +61,7 @@ class AuthService:
                 nome=nome,
                 cognome=cognome,
                 email=email,
+                numero_tessera=numero_tessera,
                 ruolo=RuoloUtente.SOCIO,
                 attivo=False,
                 email_verificato=False,

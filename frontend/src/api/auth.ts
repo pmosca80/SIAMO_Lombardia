@@ -6,11 +6,16 @@ export async function registrati(dati: {
   nome: string;
   cognome: string;
   email: string;
+  numeroTessera: string;
   password: string;
 }): Promise<MessaggioGenerico> {
   const { data } = await api.post<MessaggioGenerico>("/auth/registrati", {
     organizzazione_id: organizzazioneId,
-    ...dati,
+    nome: dati.nome,
+    cognome: dati.cognome,
+    email: dati.email,
+    numero_tessera: dati.numeroTessera,
+    password: dati.password,
   });
   return data;
 }

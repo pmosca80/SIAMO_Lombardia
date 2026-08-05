@@ -9,6 +9,7 @@ export interface Utente {
   nome: string;
   cognome: string;
   email: string;
+  numero_tessera: string | null;
   ruolo: RuoloUtente;
   attivo: boolean;
   created_at: string;
@@ -19,6 +20,7 @@ export interface UtenteCreate {
   nome: string;
   cognome: string;
   email: string;
+  numero_tessera?: string | null;
   ruolo: RuoloUtente;
   attivo: boolean;
 }

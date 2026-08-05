@@ -29,6 +29,7 @@ async def registrati(dati: RegistrazioneRequest, service: AuthServiceDep) -> Mes
         nome=dati.nome,
         cognome=dati.cognome,
         email=dati.email,
+        numero_tessera=dati.numero_tessera,
         password=dati.password,
     )
     return _MESSAGGIO_REGISTRAZIONE

@@ -5,6 +5,7 @@ export const registrazioneSchema = z
     nome: z.string().min(1, "Obbligatorio").max(120),
     cognome: z.string().min(1, "Obbligatorio").max(120),
     email: z.email("Email non valida"),
+    numeroTessera: z.string().min(1, "Obbligatorio").max(50),
     password: z.string().min(8, "Almeno 8 caratteri"),
     confermaPassword: z.string().min(1, "Obbligatorio"),
   })

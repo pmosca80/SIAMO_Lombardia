@@ -24,6 +24,7 @@ async def test_registrazione_e_verifica_email(client, organizzazione, caplog):
                 "nome": "Nuovo",
                 "cognome": "Socio",
                 "email": "nuovo@example.com",
+                "numero_tessera": "LC-00042",
                 "password": "Password123!",
             },
         )
@@ -59,6 +60,7 @@ async def test_registrazione_email_duplicata_non_rivela_nulla(client, organizzaz
             "nome": "Admin",
             "cognome": "Test",
             "email": "admin@assoc-test.example.com",
+            "numero_tessera": "LC-00099",
             "password": "AltraPassword123!",
         },
     )

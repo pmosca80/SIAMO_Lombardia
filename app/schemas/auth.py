@@ -8,6 +8,7 @@ class RegistrazioneRequest(BaseModel):
     nome: str = Field(..., max_length=120)
     cognome: str = Field(..., max_length=120)
     email: EmailStr
+    numero_tessera: str = Field(..., min_length=1, max_length=50)
     password: str = Field(..., min_length=8, max_length=128)
 
 

@@ -1,16 +1,16 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Gift, HeartHandshake, LayoutDashboard, Landmark, LogIn, Scale } from "lucide-react";
+import { ArrowRight, Clock, Gift, HeartHandshake, LayoutDashboard, Landmark, LogIn, Scale } from "lucide-react";
 import { useAuthStore } from "@/store/auth-store";
 import { Card, CardBody } from "@/components/ui/Card";
 import logo from "@/assets/logo.jpg";
 import sfondo from "@/assets/sfondo.jpg";
 
+const ISCRIZIONE_NAZIONALE_URL = "https://www.siamoesercito.org/iscrizioni";
+
 const CTA_PRIMARY_SM =
   "inline-flex h-8 items-center justify-center gap-2 rounded-md bg-brand-600 px-3 text-sm font-medium text-white transition-colors hover:bg-brand-700";
 const CTA_PRIMARY_MD =
   "inline-flex h-10 items-center justify-center gap-2 rounded-md bg-brand-600 px-4 text-sm font-medium text-white transition-colors hover:bg-brand-700";
-const CTA_SECONDARY_MD =
-  "inline-flex h-10 items-center justify-center gap-2 rounded-md bg-silver-200 px-4 text-sm font-medium text-brand-900 transition-colors hover:bg-silver-300";
 
 const COMUNICATI = [
   { data: "02.08.2026", titolo: "Assemblea regionale soci: convocazione e ordine del giorno" },
@@ -85,7 +85,7 @@ export function HomePage() {
               </Link>
             )}
             <Link to="/registrati" className={CTA_PRIMARY_SM}>
-              Iscriviti
+              Registrati
             </Link>
           </div>
         </div>
@@ -108,12 +108,18 @@ export function HomePage() {
             Tutela, assistenza e comunicazione tra iscritti: tutto quello che offre
             S.I.A.M.O. Esercito, a livello regionale.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link to="/registrati" className={CTA_PRIMARY_MD}>
-              Iscriviti <ArrowRight size={16} />
-            </Link>
-            <a href="#comunicati" className={CTA_SECONDARY_MD}>
-              Vedi i comunicati
+          <div className="mt-5 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-medium text-white ring-1 ring-white/25">
+            <Clock size={16} />
+            Assistenza 24 ore su 24
+          </div>
+          <div className="mt-8">
+            <a
+              href={ISCRIZIONE_NAZIONALE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={CTA_PRIMARY_MD}
+            >
+              Iscriviti al S.I.A.M.O. Esercito <ArrowRight size={16} />
             </a>
           </div>
         </div>
@@ -175,7 +181,7 @@ export function HomePage() {
         </div>
         <div className="mt-8 flex justify-center">
           <Link to="/registrati" className={CTA_PRIMARY_MD}>
-            Iscriviti <ArrowRight size={16} />
+            Registrati <ArrowRight size={16} />
           </Link>
         </div>
       </section>
@@ -214,7 +220,7 @@ export function HomePage() {
             <p className="text-xs font-medium tracking-wide text-white/50 uppercase">Link utili</p>
             <ul className="mt-3 space-y-2 text-sm">
               <li>
-                <Link to="/registrati" className="text-white/80 hover:text-white">Iscriviti</Link>
+                <Link to="/registrati" className="text-white/80 hover:text-white">Registrati</Link>
               </li>
               <li>
                 <Link to="/login" className="text-white/80 hover:text-white">Area Personale</Link>

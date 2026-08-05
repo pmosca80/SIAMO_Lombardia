@@ -9,6 +9,7 @@ class UtenteBase(BaseModel):
     nome: str = Field(..., max_length=120)
     cognome: str = Field(..., max_length=120)
     email: EmailStr
+    numero_tessera: str | None = Field(default=None, max_length=50)
     ruolo: RuoloUtente = RuoloUtente.SOCIO
     attivo: bool = True
 
