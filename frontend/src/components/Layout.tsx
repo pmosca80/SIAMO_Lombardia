@@ -9,7 +9,7 @@ import { RuoloBadge } from "@/components/RuoloBadge";
 import logo from "@/assets/logo.jpg";
 
 const NAV = [
-  { to: "/", label: "Dashboard", icon: LayoutDashboard, end: true },
+  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, end: true },
   { to: "/soci", label: "Soci", icon: Users, end: false },
   { to: "/comunicazioni", label: "Comunicazioni", icon: Megaphone, end: false },
 ];

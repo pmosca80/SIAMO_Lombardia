@@ -18,7 +18,7 @@ export function VerificaPage() {
       .then((coppia) => {
         setTokens(coppia.access_token, coppia.refresh_token);
         setStato("ok");
-        window.location.replace("/");
+        window.location.replace("/dashboard");
       })
       .catch(() => setStato("errore"));
   }, [token, setTokens]);
