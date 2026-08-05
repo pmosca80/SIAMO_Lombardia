@@ -44,7 +44,7 @@ const SERVIZI = [
   },
   {
     icona: Gift,
-    titolo: "Corporate Benefits",
+    titolo: "Convenzioni e Vantaggi",
     testo: "Sconti e vantaggi presso partner convenzionati su tutto il territorio regionale.",
   },
 ];
