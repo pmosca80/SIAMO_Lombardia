@@ -58,8 +58,8 @@ export function HomePage() {
       <header className="sticky top-0 z-10 border-b border-silver-200 bg-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-6 py-3">
           <div className="flex items-center gap-2">
-            <img src={logo} alt="S.I.A.M.O. Lombardia" className="h-9 w-9 rounded-full" />
-            <span className="text-sm font-semibold text-brand-950">S.I.A.M.O. Lombardia</span>
+            <img src={logo} alt="S.I.A.M.O. Esercito Lombardia" className="h-9 w-9 rounded-full" />
+            <span className="text-sm font-semibold text-brand-950">S.I.A.M.O. Esercito Lombardia</span>
           </div>
 
           <nav className="hidden items-center gap-6 text-sm font-medium text-brand-950/70 md:flex">
@@ -209,7 +209,7 @@ export function HomePage() {
           <div>
             <div className="flex items-center gap-2">
               <img src={logo} alt="" className="h-8 w-8 rounded-full" />
-              <span className="font-semibold">S.I.A.M.O. Lombardia</span>
+              <span className="font-semibold">S.I.A.M.O. Esercito Lombardia</span>
             </div>
             <p className="mt-3 max-w-xs text-sm text-white/60">
               Sezione regionale di S.I.A.M.O. Esercito: tutela, assistenza e comunicazione
@@ -243,7 +243,7 @@ export function HomePage() {
           </div>
         </div>
         <div className="border-t border-white/10 px-6 py-4 text-center text-xs text-white/50">
-          © {new Date().getFullYear()} S.I.A.M.O. Lombardia
+          © {new Date().getFullYear()} S.I.A.M.O. Esercito Lombardia
         </div>
       </footer>
     </div>
