@@ -13,7 +13,7 @@ import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.dialects import postgresql
 
-# revision identifiers, used by Alembic.
+# Identificatori della revisione, usati da Alembic.
 revision: str = "0001_schema_iniziale"
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None

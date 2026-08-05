@@ -20,7 +20,7 @@ import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.dialects import postgresql
 
-# revision identifiers, used by Alembic.
+# Identificatori della revisione, usati da Alembic.
 revision: str = "0003_login_password"
 down_revision: Union[str, None] = "0002_autenticazione"
 branch_labels: Union[str, Sequence[str], None] = None

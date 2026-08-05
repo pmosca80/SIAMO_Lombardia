@@ -12,7 +12,7 @@ from typing import Sequence, Union
 import sqlalchemy as sa
 from alembic import op
 
-# revision identifiers, used by Alembic.
+# Identificatori della revisione, usati da Alembic.
 revision: str = "0002_autenticazione"
 down_revision: Union[str, None] = "0001_schema_iniziale"
 branch_labels: Union[str, Sequence[str], None] = None
