@@ -4,6 +4,7 @@ import { ChevronDown, LayoutDashboard, LogIn, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth-store";
 import { NavDropdown } from "@/components/NavDropdown";
+import { CATEGORIE_NORMATIVE } from "@/lib/normative";
 import logo from "@/assets/logo.jpg";
 
 const CTA_PRIMARY_SM =
@@ -28,6 +29,11 @@ const SERVIZI_ITEMS = [
   { label: "Pronto PSY", to: "/servizi/pronto-psy" },
   { label: "Corporate Benefit", to: "/servizi/corporate-benefit" },
 ];
+
+const NORMATIVE_ITEMS = CATEGORIE_NORMATIVE.map((categoria) => ({
+  label: categoria.nome,
+  to: `/normative/${categoria.slug}`,
+}));
 
 export function SiteHeader() {
   const accessToken = useAuthStore((s) => s.accessToken);
@@ -59,9 +65,7 @@ export function SiteHeader() {
               Home
             </Link>
             <NavDropdown label="Organizzazione" items={ORGANIZZAZIONE_ITEMS} />
-            <Link to="/normative" className="hover:text-brand-950">
-              Normative
-            </Link>
+            <NavDropdown label="Normative" items={NORMATIVE_ITEMS} />
             <NavDropdown label="Convenzioni" items={CONVENZIONI_ITEMS} />
             <NavDropdown label="Servizi e Ticket" items={SERVIZI_ITEMS} />
           </nav>
@@ -123,11 +127,7 @@ export function SiteHeader() {
           </MobileLink>
 
           <MobileGroup label="Organizzazione" items={ORGANIZZAZIONE_ITEMS} onNavigate={() => setMobileOpen(false)} />
-
-          <MobileLink to="/normative" onNavigate={() => setMobileOpen(false)}>
-            Normative
-          </MobileLink>
-
+          <MobileGroup label="Normative" items={NORMATIVE_ITEMS} onNavigate={() => setMobileOpen(false)} />
           <MobileGroup label="Convenzioni" items={CONVENZIONI_ITEMS} onNavigate={() => setMobileOpen(false)} />
           <MobileGroup label="Servizi e Ticket" items={SERVIZI_ITEMS} onNavigate={() => setMobileOpen(false)} />
 

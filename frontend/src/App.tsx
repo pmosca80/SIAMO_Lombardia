@@ -14,6 +14,8 @@ import { ComunicazioniPage } from "@/pages/ComunicazioniPage";
 import { ContentPage } from "@/pages/ContentPage";
 import { OrganizzazioneMembroPage } from "@/pages/OrganizzazioneMembroPage";
 import { PRESIDENTE, SEGRETARIO, VICE_SEGRETARIO } from "@/lib/organizzazione";
+import { NormativeCategoriaPage } from "@/pages/NormativeCategoriaPage";
+import { CATEGORIE_NORMATIVE } from "@/lib/normative";
 import { ApriTicketPage } from "@/pages/ApriTicketPage";
 import { ConsulenzaGratuitaPage } from "@/pages/ConsulenzaGratuitaPage";
 import { ContattiPage } from "@/pages/ContattiPage";
@@ -47,7 +49,13 @@ export default function App() {
           element={<OrganizzazioneMembroPage {...VICE_SEGRETARIO} />}
         />
 
-        <Route path="/normative" element={<ContentPage title="Normative" />} />
+        {CATEGORIE_NORMATIVE.map((categoria) => (
+          <Route
+            key={categoria.slug}
+            path={`/normative/${categoria.slug}`}
+            element={<NormativeCategoriaPage {...categoria} />}
+          />
+        ))}
 
         <Route
           path="/convenzioni/nazionali"
