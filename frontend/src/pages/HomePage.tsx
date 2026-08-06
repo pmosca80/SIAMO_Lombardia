@@ -1,14 +1,12 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Clock, Gift, HeartHandshake, LayoutDashboard, Landmark, LogIn, Scale } from "lucide-react";
-import { useAuthStore } from "@/store/auth-store";
+import { ArrowRight, Clock, Gift, HeartHandshake, Landmark, Scale } from "lucide-react";
 import { Card, CardBody } from "@/components/ui/Card";
-import logo from "@/assets/logo.jpg";
+import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 import sfondo from "@/assets/sfondo.jpg";
 
 const ISCRIZIONE_NAZIONALE_URL = "https://www.siamoesercito.org/iscrizioni";
 
-const CTA_PRIMARY_SM =
-  "inline-flex h-8 items-center justify-center gap-2 rounded-md bg-brand-600 px-3 text-sm font-medium text-white transition-colors hover:bg-brand-700";
 const CTA_PRIMARY_MD =
   "inline-flex h-10 items-center justify-center gap-2 rounded-md bg-brand-600 px-4 text-sm font-medium text-white transition-colors hover:bg-brand-700";
 
@@ -50,46 +48,9 @@ const SERVIZI = [
 ];
 
 export function HomePage() {
-  const accessToken = useAuthStore((s) => s.accessToken);
-
   return (
     <div className="min-h-screen bg-white">
-      {/* Header + nav */}
-      <header className="sticky top-0 z-10 border-b border-silver-200 bg-white/95 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-6 py-3">
-          <div className="flex items-center gap-2">
-            <img src={logo} alt="S.I.A.M.O. Esercito Lombardia" className="h-9 w-9 rounded-full" />
-            <span className="text-sm font-semibold text-brand-950">S.I.A.M.O. Esercito Lombardia</span>
-          </div>
-
-          <nav className="hidden items-center gap-6 text-sm font-medium text-brand-950/70 md:flex">
-            <a href="#comunicati" className="hover:text-brand-950">Comunicati</a>
-            <a href="#normative" className="hover:text-brand-950">Normative</a>
-            <a href="#servizi" className="hover:text-brand-950">Servizi</a>
-          </nav>
-
-          <div className="flex items-center gap-3">
-            {accessToken ? (
-              <Link
-                to="/dashboard"
-                className="flex items-center gap-1.5 text-sm font-medium text-brand-700 hover:text-brand-900"
-              >
-                <LayoutDashboard size={16} /> Dashboard
-              </Link>
-            ) : (
-              <Link
-                to="/login"
-                className="flex items-center gap-1.5 text-sm font-medium text-brand-700 hover:text-brand-900"
-              >
-                <LogIn size={16} /> Area Personale
-              </Link>
-            )}
-            <Link to="/registrati" className={CTA_PRIMARY_SM}>
-              Registrati
-            </Link>
-          </div>
-        </div>
-      </header>
+      <SiteHeader />
 
       {/* Hero */}
       <section
@@ -203,49 +164,7 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-brand-950 text-white">
-        <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 px-6 py-12 sm:grid-cols-3">
-          <div>
-            <div className="flex items-center gap-2">
-              <img src={logo} alt="" className="h-8 w-8 rounded-full" />
-              <span className="font-semibold">S.I.A.M.O. Esercito Lombardia</span>
-            </div>
-            <p className="mt-3 max-w-xs text-sm text-white/60">
-              Sezione regionale di S.I.A.M.O. Esercito: tutela, assistenza e comunicazione
-              per il personale dell'Esercito in Lombardia.
-            </p>
-          </div>
-          <div>
-            <p className="text-xs font-medium tracking-wide text-white/50 uppercase">Link utili</p>
-            <ul className="mt-3 space-y-2 text-sm">
-              <li>
-                <Link to="/registrati" className="text-white/80 hover:text-white">Registrati</Link>
-              </li>
-              <li>
-                <Link to="/login" className="text-white/80 hover:text-white">Area Personale</Link>
-              </li>
-              <li>
-                <a
-                  href="https://www.siamoesercito.org/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-white/80 hover:text-white"
-                >
-                  Sito nazionale ↗
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <p className="text-xs font-medium tracking-wide text-white/50 uppercase">Affiliazione</p>
-            <p className="mt-3 text-sm text-white/60">Ministero della Difesa</p>
-          </div>
-        </div>
-        <div className="border-t border-white/10 px-6 py-4 text-center text-xs text-white/50">
-          © {new Date().getFullYear()} S.I.A.M.O. Esercito Lombardia
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

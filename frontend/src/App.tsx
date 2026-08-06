@@ -11,6 +11,7 @@ import { VerificaPage } from "@/pages/VerificaPage";
 import { DashboardPage } from "@/pages/DashboardPage";
 import { SociPage } from "@/pages/SociPage";
 import { ComunicazioniPage } from "@/pages/ComunicazioniPage";
+import { ContentPage } from "@/pages/ContentPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 
 function Protetta({ children }: { children: ReactNode }) {
@@ -32,6 +33,35 @@ export default function App() {
         <Route path="/auth/verifica-email" element={<VerificaPage />} />
 
         <Route path="/" element={<HomePage />} />
+
+        <Route path="/organizzazione/presidente" element={<ContentPage eyebrow="Organizzazione" title="Presidente" />} />
+        <Route path="/organizzazione/segretario" element={<ContentPage eyebrow="Organizzazione" title="Segretario" />} />
+        <Route
+          path="/organizzazione/vice-segretario"
+          element={<ContentPage eyebrow="Organizzazione" title="Vice Segretario" />}
+        />
+
+        <Route path="/normative" element={<ContentPage title="Normative" />} />
+
+        <Route
+          path="/convenzioni/nazionali"
+          element={<ContentPage eyebrow="Convenzioni" title="Convenzioni Nazionali" />}
+        />
+        <Route
+          path="/convenzioni/locali"
+          element={<ContentPage eyebrow="Convenzioni" title="Convenzioni Locali" />}
+        />
+
+        <Route path="/servizi/tutela-legale" element={<ContentPage eyebrow="Servizi" title="Tutela Legale" />} />
+        <Route
+          path="/servizi/assistenza-fiscale"
+          element={<ContentPage eyebrow="Servizi" title="Assistenza Fiscale" />}
+        />
+        <Route path="/servizi/pronto-psy" element={<ContentPage eyebrow="Servizi" title="Pronto PSY" />} />
+        <Route
+          path="/servizi/corporate-benefit"
+          element={<ContentPage eyebrow="Servizi" title="Corporate Benefit" />}
+        />
         <Route
           path="/dashboard"
           element={
