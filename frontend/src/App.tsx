@@ -16,6 +16,7 @@ import { OrganizzazioneMembroPage } from "@/pages/OrganizzazioneMembroPage";
 import { PRESIDENTE, SEGRETARIO, VICE_SEGRETARIO } from "@/lib/organizzazione";
 import { NormativeCategoriaPage } from "@/pages/NormativeCategoriaPage";
 import { CATEGORIE_NORMATIVE } from "@/lib/normative";
+import { ConvenzioniNazionaliPage } from "@/pages/ConvenzioniNazionaliPage";
 import { ApriTicketPage } from "@/pages/ApriTicketPage";
 import { ConsulenzaGratuitaPage } from "@/pages/ConsulenzaGratuitaPage";
 import { ContattiPage } from "@/pages/ContattiPage";
@@ -57,10 +58,7 @@ export default function App() {
           />
         ))}
 
-        <Route
-          path="/convenzioni/nazionali"
-          element={<ContentPage eyebrow="Convenzioni" title="Convenzioni Nazionali" />}
-        />
+        <Route path="/convenzioni/nazionali" element={<ConvenzioniNazionaliPage />} />
         <Route
           path="/convenzioni/locali"
           element={<ContentPage eyebrow="Convenzioni" title="Convenzioni Locali" />}
