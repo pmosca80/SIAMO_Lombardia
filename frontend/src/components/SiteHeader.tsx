@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { LayoutDashboard, LogIn, Menu, X } from "lucide-react";
+import { ChevronDown, LayoutDashboard, LogIn, Menu, X } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth-store";
 import { NavDropdown } from "@/components/NavDropdown";
 import logo from "@/assets/logo.jpg";
@@ -34,11 +35,25 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-10 border-b border-silver-200 bg-white/95 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-6 py-3">
-        <Link to="/" className="flex items-center gap-2">
-          <img src={logo} alt="S.I.A.M.O. Esercito Lombardia" className="h-9 w-9 rounded-full" />
-          <span className="text-sm font-semibold text-brand-950">S.I.A.M.O. Esercito Lombardia</span>
-        </Link>
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-6 py-3">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setMobileOpen((v) => !v)}
+            aria-expanded={mobileOpen}
+            aria-label="Apri il menu"
+            className="flex h-8 w-8 items-center justify-center rounded-md text-brand-950 hover:bg-silver-100 md:hidden"
+          >
+            {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+
+          <Link to="/" className="flex items-center gap-2">
+            <img src={logo} alt="S.I.A.M.O. Esercito Lombardia" className="h-9 w-9 rounded-full" />
+            <span className="hidden text-sm font-semibold text-brand-950 sm:inline">
+              S.I.A.M.O. Esercito Lombardia
+            </span>
+          </Link>
+        </div>
 
         <nav className="hidden items-center gap-6 text-sm font-medium text-brand-950/70 md:flex">
           <Link to="/" className="hover:text-brand-950">
@@ -62,31 +77,23 @@ export function SiteHeader() {
           {accessToken ? (
             <Link
               to="/dashboard"
-              className="hidden items-center gap-1.5 text-sm font-medium text-brand-700 hover:text-brand-900 sm:flex"
+              className="flex items-center gap-1.5 text-sm font-medium text-brand-700 hover:text-brand-900"
             >
-              <LayoutDashboard size={16} /> Dashboard
+              <LayoutDashboard size={16} />
+              <span className="hidden sm:inline">Dashboard</span>
             </Link>
           ) : (
             <Link
               to="/login"
-              className="hidden items-center gap-1.5 text-sm font-medium text-brand-700 hover:text-brand-900 sm:flex"
+              className="flex items-center gap-1.5 text-sm font-medium text-brand-700 hover:text-brand-900"
             >
-              <LogIn size={16} /> Area Personale
+              <LogIn size={16} />
+              <span className="hidden sm:inline">Area Personale</span>
             </Link>
           )}
           <Link to="/registrati" className={CTA_PRIMARY_SM}>
             Registrati
           </Link>
-
-          <button
-            type="button"
-            onClick={() => setMobileOpen((v) => !v)}
-            aria-expanded={mobileOpen}
-            aria-label="Apri il menu"
-            className="flex h-8 w-8 items-center justify-center rounded-md text-brand-950 hover:bg-silver-100 md:hidden"
-          >
-            {mobileOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
         </div>
       </div>
 
@@ -107,9 +114,6 @@ export function SiteHeader() {
 
           <MobileLink to="/contatti" onNavigate={() => setMobileOpen(false)}>
             Contatti
-          </MobileLink>
-          <MobileLink to={accessToken ? "/dashboard" : "/login"} onNavigate={() => setMobileOpen(false)}>
-            {accessToken ? "Dashboard" : "Area Personale"}
           </MobileLink>
         </nav>
       )}
@@ -146,21 +150,33 @@ function MobileGroup({
   items: { label: string; to: string }[];
   onNavigate: () => void;
 }) {
+  const [open, setOpen] = useState(false);
+
   return (
     <div className="border-b border-silver-100 py-3">
-      <p className="font-medium text-brand-950">{label}</p>
-      <div className="mt-2 flex flex-col gap-2 pl-3">
-        {items.map((item) => (
-          <Link
-            key={item.to}
-            to={item.to}
-            onClick={onNavigate}
-            className="text-brand-950/70 hover:text-brand-950"
-          >
-            {item.label}
-          </Link>
-        ))}
-      </div>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="flex w-full items-center justify-between font-medium text-brand-950"
+      >
+        {label}
+        <ChevronDown size={16} className={cn("transition-transform", open && "rotate-180")} />
+      </button>
+      {open && (
+        <div className="mt-2 flex flex-col gap-2 pl-3">
+          {items.map((item) => (
+            <Link
+              key={item.to}
+              to={item.to}
+              onClick={onNavigate}
+              className="text-brand-950/70 hover:text-brand-950"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
