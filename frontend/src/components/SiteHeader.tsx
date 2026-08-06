@@ -35,63 +35,82 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-10 border-b border-silver-200 bg-white/95 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-6 py-3">
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setMobileOpen((v) => !v)}
-            aria-expanded={mobileOpen}
-            aria-label="Apri il menu"
-            className="flex h-8 w-8 items-center justify-center rounded-md text-brand-950 hover:bg-silver-100 md:hidden"
-          >
-            {mobileOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
+      <div className="mx-auto max-w-6xl px-6">
+        <div className="flex items-center justify-between gap-3 py-3">
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setMobileOpen((v) => !v)}
+              aria-expanded={mobileOpen}
+              aria-label="Apri il menu"
+              className="flex h-8 w-8 items-center justify-center rounded-md text-brand-950 hover:bg-silver-100 md:hidden"
+            >
+              {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
 
-          <Link to="/" className="flex items-center gap-2">
-            <img src={logo} alt="S.I.A.M.O. Esercito Lombardia" className="h-9 w-9 rounded-full" />
-            <span className="hidden text-sm font-semibold text-brand-950 sm:inline">
-              S.I.A.M.O. Esercito Lombardia
-            </span>
-          </Link>
+            <Link to="/" className="flex items-center gap-2">
+              <img src={logo} alt="S.I.A.M.O. Esercito Lombardia" className="h-9 w-9 rounded-full" />
+              <span className="text-sm font-semibold text-brand-950">S.I.A.M.O. Esercito Lombardia</span>
+            </Link>
+          </div>
+
+          <nav className="hidden items-center gap-6 text-sm font-medium text-brand-950/70 md:flex">
+            <Link to="/" className="hover:text-brand-950">
+              Home
+            </Link>
+            <NavDropdown label="Organizzazione" items={ORGANIZZAZIONE_ITEMS} />
+            <Link to="/normative" className="hover:text-brand-950">
+              Normative
+            </Link>
+            <NavDropdown label="Convenzioni" items={CONVENZIONI_ITEMS} />
+            <NavDropdown label="Servizi e Ticket" items={SERVIZI_ITEMS} />
+          </nav>
+
+          <div className="hidden items-center gap-3 md:flex">
+            <Link to="/contatti" className="text-sm font-medium text-brand-950/70 hover:text-brand-950">
+              Contatti
+            </Link>
+            {accessToken ? (
+              <Link
+                to="/dashboard"
+                className="flex items-center gap-1.5 text-sm font-medium text-brand-700 hover:text-brand-900"
+              >
+                <LayoutDashboard size={16} /> Dashboard
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                className="flex items-center gap-1.5 text-sm font-medium text-brand-700 hover:text-brand-900"
+              >
+                <LogIn size={16} /> Area Personale
+              </Link>
+            )}
+            <Link to="/registrati" className={CTA_PRIMARY_SM}>
+              Registrati
+            </Link>
+          </div>
         </div>
 
-        <nav className="hidden items-center gap-6 text-sm font-medium text-brand-950/70 md:flex">
-          <Link to="/" className="hover:text-brand-950">
-            Home
-          </Link>
-          <NavDropdown label="Organizzazione" items={ORGANIZZAZIONE_ITEMS} />
-          <Link to="/normative" className="hover:text-brand-950">
-            Normative
-          </Link>
-          <NavDropdown label="Convenzioni" items={CONVENZIONI_ITEMS} />
-          <NavDropdown label="Servizi e Ticket" items={SERVIZI_ITEMS} />
-        </nav>
-
-        <div className="flex items-center gap-3">
-          <Link
-            to="/contatti"
-            className="hidden text-sm font-medium text-brand-950/70 hover:text-brand-950 md:block"
-          >
-            Contatti
-          </Link>
+        <div className="flex items-center justify-end gap-4 border-t border-silver-100 py-2 md:hidden">
           {accessToken ? (
             <Link
               to="/dashboard"
-              className="flex items-center gap-1.5 text-sm font-medium text-brand-700 hover:text-brand-900"
+              className="flex items-center gap-1.5 text-xs font-medium text-brand-700 hover:text-brand-900"
             >
-              <LayoutDashboard size={16} />
-              <span className="hidden sm:inline">Dashboard</span>
+              <LayoutDashboard size={14} /> Dashboard
             </Link>
           ) : (
             <Link
               to="/login"
-              className="flex items-center gap-1.5 text-sm font-medium text-brand-700 hover:text-brand-900"
+              className="flex items-center gap-1.5 text-xs font-medium text-brand-700 hover:text-brand-900"
             >
-              <LogIn size={16} />
-              <span className="hidden sm:inline">Area Personale</span>
+              <LogIn size={14} /> Area Personale
             </Link>
           )}
-          <Link to="/registrati" className={CTA_PRIMARY_SM}>
+          <Link
+            to="/registrati"
+            className="inline-flex h-7 items-center justify-center rounded-md bg-brand-600 px-3 text-xs font-medium text-white transition-colors hover:bg-brand-700"
+          >
             Registrati
           </Link>
         </div>
