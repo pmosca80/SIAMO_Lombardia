@@ -5,21 +5,21 @@ import moscatelliFoto from "@/assets/organizzazione/moscatelli.jpg";
 export const PRESIDENTE = {
   ruolo: "Presidente",
   cognome: "Calabrese",
-  email: "presidentelombardia@siamoesercito.it",
+  email: "presidentelombardia@siamoesercito.org",
   foto: calabreseFoto,
 };
 
 export const SEGRETARIO = {
   ruolo: "Segretario",
   cognome: "Leone",
-  email: "segretariolombardia@siamoesercito.it",
+  email: "segretariolombardia@siamoesercito.org",
   foto: leoneFoto,
 };
 
 export const VICE_SEGRETARIO = {
   ruolo: "Vice Segretario",
   cognome: "Moscatelli",
-  email: "vicesegretariolombardia@siamoesercito.it",
+  email: "vicesegretariolombardia@siamoesercito.org",
   foto: moscatelliFoto,
 };
 

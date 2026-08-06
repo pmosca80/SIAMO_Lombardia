@@ -4,4 +4,4 @@ export const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://localhost
 // è fisso e non richiesto all'utente in fase di login.
 export const organizzazioneId = Number(import.meta.env.VITE_ORGANIZZAZIONE_ID ?? "1");
 
-export const segretarioEmail = "segretariolombardia@siamoesercito.it";
+export const segretarioEmail = "segretariolombardia@siamoesercito.org";

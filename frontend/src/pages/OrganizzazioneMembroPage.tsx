@@ -27,10 +27,8 @@ export function OrganizzazioneMembroPage({
             alt={`${ruolo} - ${cognome}`}
             className="aspect-[4/5] w-full object-cover sm:w-56"
           />
-          <div className="flex flex-col justify-center gap-2 p-6">
-            <p className="text-xs font-medium tracking-wide text-brand-950/50 uppercase">{ruolo}</p>
-            <h2 className="text-xl font-semibold text-brand-950">{cognome}</h2>
-            <a href={`mailto:${email}`} className="mt-2 text-sm text-brand-600 underline">
+          <div className="flex flex-col justify-center p-6">
+            <a href={`mailto:${email}`} className="text-sm text-brand-600 underline">
               {email}
             </a>
           </div>
