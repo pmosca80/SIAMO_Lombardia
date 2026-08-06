@@ -1,12 +1,7 @@
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Card, CardBody } from "@/components/ui/Card";
-
-const CONTATTI = [
-  { ruolo: "Presidente", email: "presidentelombardia@siamoesercito.it" },
-  { ruolo: "Segretario", email: "segretariolombardia@siamoesercito.it" },
-  { ruolo: "Vice Segretario", email: "vicesegretariolombardia@siamoesercito.it" },
-];
+import { MEMBRI_ORGANIZZAZIONE } from "@/lib/organizzazione";
 
 export function ContattiPage() {
   return (
@@ -22,7 +17,7 @@ export function ContattiPage() {
         <Card className="mt-8">
           <CardBody>
             <ul className="divide-y divide-silver-200">
-              {CONTATTI.map(({ ruolo, email }) => (
+              {MEMBRI_ORGANIZZAZIONE.map(({ ruolo, email }) => (
                 <li key={ruolo} className="flex flex-col gap-1 py-4 sm:flex-row sm:items-center sm:gap-3">
                   <span className="font-medium text-brand-950">{ruolo}:</span>
                   <a href={`mailto:${email}`} className="text-brand-600 underline">

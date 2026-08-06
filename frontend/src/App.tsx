@@ -12,6 +12,8 @@ import { DashboardPage } from "@/pages/DashboardPage";
 import { SociPage } from "@/pages/SociPage";
 import { ComunicazioniPage } from "@/pages/ComunicazioniPage";
 import { ContentPage } from "@/pages/ContentPage";
+import { OrganizzazioneMembroPage } from "@/pages/OrganizzazioneMembroPage";
+import { PRESIDENTE, SEGRETARIO, VICE_SEGRETARIO } from "@/lib/organizzazione";
 import { ApriTicketPage } from "@/pages/ApriTicketPage";
 import { ConsulenzaGratuitaPage } from "@/pages/ConsulenzaGratuitaPage";
 import { ContattiPage } from "@/pages/ContattiPage";
@@ -38,11 +40,11 @@ export default function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/contatti" element={<ContattiPage />} />
 
-        <Route path="/organizzazione/presidente" element={<ContentPage eyebrow="Organizzazione" title="Presidente" />} />
-        <Route path="/organizzazione/segretario" element={<ContentPage eyebrow="Organizzazione" title="Segretario" />} />
+        <Route path="/organizzazione/presidente" element={<OrganizzazioneMembroPage {...PRESIDENTE} />} />
+        <Route path="/organizzazione/segretario" element={<OrganizzazioneMembroPage {...SEGRETARIO} />} />
         <Route
           path="/organizzazione/vice-segretario"
-          element={<ContentPage eyebrow="Organizzazione" title="Vice Segretario" />}
+          element={<OrganizzazioneMembroPage {...VICE_SEGRETARIO} />}
         />
 
         <Route path="/normative" element={<ContentPage title="Normative" />} />
