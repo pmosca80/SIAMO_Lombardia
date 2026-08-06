@@ -46,6 +46,26 @@ export const utenteCreateSchema = z.object({
 });
 export type UtenteCreateForm = z.infer<typeof utenteCreateSchema>;
 
+export const TICKET_CATEGORIE = [
+  "Tutela Legale",
+  "Assistenza Fiscale",
+  "Pronto PSY",
+  "Corporate Benefit",
+  "Convenzioni",
+  "Iscrizione",
+  "Altro",
+] as const;
+
+export const ticketSchema = z.object({
+  nomeCognome: z.string().min(1, "Obbligatorio").max(150),
+  numeroTessera: z.string().max(50).optional(),
+  telefono: z.string().max(30).optional(),
+  email: z.email("Email non valida"),
+  categoria: z.enum(TICKET_CATEGORIE),
+  messaggio: z.string().min(1, "Obbligatorio"),
+});
+export type TicketForm = z.infer<typeof ticketSchema>;
+
 export const comunicazioneCreateSchema = z.object({
   titolo: z.string().min(1, "Obbligatorio").max(255),
   corpo: z.string().min(1, "Obbligatorio"),

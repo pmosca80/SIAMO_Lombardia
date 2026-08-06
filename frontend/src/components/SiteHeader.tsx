@@ -41,8 +41,10 @@ export function SiteHeader() {
             ]}
           />
           <NavDropdown
-            label="Servizi"
+            label="Servizi e Ticket"
             items={[
+              { label: "Apri il tuo ticket", to: "/servizi/apri-ticket" },
+              { label: "Ricevi una consulenza gratuita", to: "/servizi/consulenza-gratuita" },
               { label: "Tutela Legale", to: "/servizi/tutela-legale" },
               { label: "Assistenza Fiscale", to: "/servizi/assistenza-fiscale" },
               { label: "Pronto PSY", to: "/servizi/pronto-psy" },

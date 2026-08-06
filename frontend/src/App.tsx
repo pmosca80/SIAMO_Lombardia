@@ -12,6 +12,8 @@ import { DashboardPage } from "@/pages/DashboardPage";
 import { SociPage } from "@/pages/SociPage";
 import { ComunicazioniPage } from "@/pages/ComunicazioniPage";
 import { ContentPage } from "@/pages/ContentPage";
+import { ApriTicketPage } from "@/pages/ApriTicketPage";
+import { ConsulenzaGratuitaPage } from "@/pages/ConsulenzaGratuitaPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 
 function Protetta({ children }: { children: ReactNode }) {
@@ -51,6 +53,9 @@ export default function App() {
           path="/convenzioni/locali"
           element={<ContentPage eyebrow="Convenzioni" title="Convenzioni Locali" />}
         />
+
+        <Route path="/servizi/apri-ticket" element={<ApriTicketPage />} />
+        <Route path="/servizi/consulenza-gratuita" element={<ConsulenzaGratuitaPage />} />
 
         <Route path="/servizi/tutela-legale" element={<ContentPage eyebrow="Servizi" title="Tutela Legale" />} />
         <Route
