@@ -54,6 +54,12 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-3">
+          <Link
+            to="/contatti"
+            className="hidden text-sm font-medium text-brand-950/70 hover:text-brand-950 md:block"
+          >
+            Contatti
+          </Link>
           {accessToken ? (
             <Link
               to="/dashboard"

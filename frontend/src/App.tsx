@@ -14,6 +14,7 @@ import { ComunicazioniPage } from "@/pages/ComunicazioniPage";
 import { ContentPage } from "@/pages/ContentPage";
 import { ApriTicketPage } from "@/pages/ApriTicketPage";
 import { ConsulenzaGratuitaPage } from "@/pages/ConsulenzaGratuitaPage";
+import { ContattiPage } from "@/pages/ContattiPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 
 function Protetta({ children }: { children: ReactNode }) {
@@ -35,6 +36,7 @@ export default function App() {
         <Route path="/auth/verifica-email" element={<VerificaPage />} />
 
         <Route path="/" element={<HomePage />} />
+        <Route path="/contatti" element={<ContattiPage />} />
 
         <Route path="/organizzazione/presidente" element={<ContentPage eyebrow="Organizzazione" title="Presidente" />} />
         <Route path="/organizzazione/segretario" element={<ContentPage eyebrow="Organizzazione" title="Segretario" />} />
