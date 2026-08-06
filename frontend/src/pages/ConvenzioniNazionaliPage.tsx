@@ -1,7 +1,7 @@
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Card, CardBody } from "@/components/ui/Card";
-import { CATEGORIE_CONVENZIONI_NAZIONALI } from "@/lib/convenzioni";
+import { CATEGORIE_CASHBACK_FORZE_ARMATE, CATEGORIE_CONVENZIONI_NAZIONALI } from "@/lib/convenzioni";
 
 export function ConvenzioniNazionaliPage() {
   return (
@@ -19,6 +19,23 @@ export function ConvenzioniNazionaliPage() {
           <CardBody>
             <ul className="grid grid-cols-1 gap-x-8 sm:grid-cols-2">
               {CATEGORIE_CONVENZIONI_NAZIONALI.map((categoria) => (
+                <li key={categoria} className="border-b border-silver-200 py-3 text-sm text-brand-950">
+                  {categoria}
+                </li>
+              ))}
+            </ul>
+          </CardBody>
+        </Card>
+
+        <h2 className="mt-12 text-xl font-semibold text-brand-950">Cashback Forze Armate</h2>
+        <p className="mt-2 text-sm text-brand-950/60">
+          Categorie della piattaforma di cashback e sconti dedicata al personale delle Forze Armate.
+        </p>
+
+        <Card className="mt-6">
+          <CardBody>
+            <ul className="grid grid-cols-1 gap-x-8 sm:grid-cols-2">
+              {CATEGORIE_CASHBACK_FORZE_ARMATE.map((categoria) => (
                 <li key={categoria} className="border-b border-silver-200 py-3 text-sm text-brand-950">
                   {categoria}
                 </li>

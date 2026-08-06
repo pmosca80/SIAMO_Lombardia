@@ -32,3 +32,18 @@ export const CATEGORIE_CONVENZIONI_NAZIONALI = [
   "Trasporti",
   "Turismo",
 ];
+
+export const CATEGORIE_CASHBACK_FORZE_ARMATE = [
+  "Vacanze e Viaggi",
+  "Tempo Libero",
+  "Tecnologia e Elettrodomestici",
+  "Alimentari e Supermercati",
+  "Gift Card",
+  "Moda",
+  "Articoli sportivi",
+  "Profumeria e Cosmetica",
+  "Salute e Cura della persona",
+  "Cura della Casa",
+  "Famiglia",
+  "Cashback365",
+];
