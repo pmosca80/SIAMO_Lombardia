@@ -1,4 +1,3 @@
-import sentry_sdk
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -7,6 +6,8 @@ from app.core.config import settings
 from app.routers import auth, comunicazione, organizzazione, utente
 
 if settings.sentry_dsn:
+    import sentry_sdk
+
     sentry_sdk.init(
         dsn=settings.sentry_dsn,
         environment=settings.environment,

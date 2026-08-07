@@ -1,3 +1,5 @@
+import asyncio
+
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -65,7 +67,7 @@ class AuthService:
                 ruolo=RuoloUtente.SOCIO,
                 attivo=False,
                 email_verificato=False,
-                password_hash=hash_password(password),
+                password_hash=await asyncio.to_thread(hash_password, password),
             )
         )
         await self._invia_token_azione(
@@ -94,7 +96,7 @@ class AuthService:
         utente = await utenti.get_by_email(email)
         if utente is None or utente.password_hash is None:
             raise _CREDENZIALI_ERRATE
-        if not verifica_password(password, utente.password_hash):
+        if not await asyncio.to_thread(verifica_password, password, utente.password_hash):
             raise _CREDENZIALI_ERRATE
         if not utente.email_verificato:
             raise HTTPException(
@@ -125,7 +127,7 @@ class AuthService:
 
     async def reset_password(self, *, token: str, nuova_password: str) -> None:
         utente = await self._consuma_token(token, TipoTokenAzione.RESET_PASSWORD)
-        utente.password_hash = hash_password(nuova_password)
+        utente.password_hash = await asyncio.to_thread(hash_password, nuova_password)
         self.session.add(utente)
         await self.session.flush()
 

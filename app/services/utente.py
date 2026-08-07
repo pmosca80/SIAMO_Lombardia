@@ -1,3 +1,5 @@
+import asyncio
+
 from fastapi import HTTPException, status
 
 from app.core.security import hash_password
@@ -18,7 +20,7 @@ class UtenteService:
             )
         dati_utente = dati.model_dump(exclude={"password"})
         if dati.password is not None:
-            dati_utente["password_hash"] = hash_password(dati.password)
+            dati_utente["password_hash"] = await asyncio.to_thread(hash_password, dati.password)
         utente = Utente(**dati_utente)
         return await self.repository.add(utente)
 

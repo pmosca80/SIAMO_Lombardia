@@ -1,3 +1,5 @@
+import asyncio
+
 from fastapi import HTTPException, status
 
 from app.core.security import hash_password
@@ -36,7 +38,7 @@ class OrganizzazioneService:
                     cognome=dati.admin_cognome,
                     email=dati.admin_email,
                     ruolo=RuoloUtente.AMMINISTRATORE,
-                    password_hash=hash_password(dati.admin_password),
+                    password_hash=await asyncio.to_thread(hash_password, dati.admin_password),
                     email_verificato=True,
                 )
             )
