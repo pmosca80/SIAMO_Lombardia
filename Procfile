@@ -1,1 +1,1 @@
-web: alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+web: alembic upgrade head && gunicorn app.main:app -k uvicorn.workers.UvicornWorker --workers ${WEB_CONCURRENCY:-2} --max-requests 1000 --max-requests-jitter 100 --timeout 30 --graceful-timeout 30 --keep-alive 5 --bind 0.0.0.0:$PORT
