@@ -8,11 +8,23 @@ from sqlalchemy.ext.asyncio import (
 
 from app.core.config import settings
 
-engine = create_async_engine(
-    settings.database_url,
-    echo=settings.debug,
-    pool_pre_ping=True,
-)
+_is_sqlite = settings.database_url.startswith("sqlite")
+
+if _is_sqlite:
+    # SQLite (test/dev) usa StaticPool: non accetta pool_size/max_overflow.
+    engine = create_async_engine(settings.database_url, echo=settings.debug)
+else:
+    # pool_size/max_overflow espliciti (invece dei default SQLAlchemy 5+10).
+    # pool_recycle: evita errori di connessione chiusa da Railway su
+    # connessioni Postgres idle.
+    engine = create_async_engine(
+        settings.database_url,
+        echo=settings.debug,
+        pool_pre_ping=True,
+        pool_recycle=1800,
+        pool_size=5,
+        max_overflow=5,
+    )
 
 AsyncSessionLocal = async_sessionmaker(
     bind=engine,
