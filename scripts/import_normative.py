@@ -42,13 +42,13 @@ from app.core.storage_r2 import (
     list_keys,
     upload_file,
 )
-from app.models.normativa_documento import NormativaDocumento
+from app.models.categoria_normativa import CategoriaNormativa
+from app.models.documento_normativa import DocumentoNormativa
 
 BASE_URL = "https://www.siamoesercito.org"
 INDEX_URL = f"{BASE_URL}/index.php/normative"
 LOGIN_URL = f"{BASE_URL}/index.php/user/login"
 USER_AGENT = "SIAMO-Lombardia-ImportBot/1.0 (+contatto: pmosca80@gmail.com)"
-R2_PREFIX = "normative"
 
 logging.basicConfig(
     level=logging.INFO,
@@ -315,33 +315,70 @@ class ImporterNormative:
             return None
 
 
+async def get_or_create_categoria(
+    session, *, slug: str, nome: str, parent_id: int | None
+) -> int:
+    esistente = (
+        await session.execute(
+            select(CategoriaNormativa).where(CategoriaNormativa.slug == slug)
+        )
+    ).scalar_one_or_none()
+    if esistente is not None:
+        if esistente.nome != nome or esistente.parent_id != parent_id:
+            esistente.nome = nome
+            esistente.parent_id = parent_id
+            await session.flush()
+        return esistente.id
+
+    riga = CategoriaNormativa(slug=slug, nome=nome, parent_id=parent_id)
+    session.add(riga)
+    await session.flush()
+    return riga.id
+
+
+async def assicura_categorie(session, categorie: list[CategoriaSub]) -> dict[str, int]:
+    """Crea/aggiorna macro e sotto-categorie in DB, ritorna sub_slug -> id."""
+    macro_id_by_slug: dict[str, int] = {}
+    for macro_slug, macro_nome in {(c.macro_slug, c.macro_nome) for c in categorie}:
+        macro_id_by_slug[macro_slug] = await get_or_create_categoria(
+            session, slug=macro_slug, nome=macro_nome, parent_id=None
+        )
+
+    sub_id_by_slug: dict[str, int] = {}
+    for categoria in categorie:
+        sub_id_by_slug[categoria.sub_slug] = await get_or_create_categoria(
+            session,
+            slug=categoria.sub_slug,
+            nome=categoria.sub_nome,
+            parent_id=macro_id_by_slug[categoria.macro_slug],
+        )
+    return sub_id_by_slug
+
+
 async def upsert_documento(
     session,
     *,
     categoria: CategoriaSub,
+    categoria_id: int | None,
     documento: DocumentoTrovato,
     importer: ImporterNormative,
     recheck_pdf: bool,
 ) -> None:
     esistente = (
         await session.execute(
-            select(NormativaDocumento).where(
-                NormativaDocumento.source_url == documento.url
+            select(DocumentoNormativa).where(
+                DocumentoNormativa.source_url == documento.url
             )
         )
     ).scalar_one_or_none()
 
     e_nuovo = esistente is None
-    riga = esistente or NormativaDocumento(source_url=documento.url)
+    riga = esistente or DocumentoNormativa(source_url=documento.url)
 
-    riga.categoria_macro_slug = categoria.macro_slug
-    riga.categoria_macro_nome = categoria.macro_nome
-    riga.categoria_sub_slug = categoria.sub_slug
-    riga.categoria_sub_nome = categoria.sub_nome
     riga.titolo = documento.titolo
     riga.data_pubblicazione = documento.data_pubblicazione
 
-    scarica = e_nuovo or riga.storage_key is None or recheck_pdf
+    scarica = e_nuovo or riga.file_path is None or recheck_pdf
     if scarica and importer.autenticato:
         allegato = importer.estrai_allegato_nodo(documento.url)
         if allegato:
@@ -349,23 +386,22 @@ async def upsert_documento(
             contenuto = importer.scarica_pdf(pdf_href)
             if contenuto is not None:
                 checksum = hashlib.sha256(contenuto).hexdigest()
-                if checksum != riga.checksum_sha256:
+                if checksum != riga.checksum:
                     nome_file = slugify(nome_file_originale) or "documento"
-                    storage_key = (
-                        f"{R2_PREFIX}/{categoria.macro_slug}/{categoria.sub_slug}/"
-                        f"{nome_file}.pdf"
+                    file_path = (
+                        f"{categoria.macro_slug}/{categoria.sub_slug}/{nome_file}.pdf"
                     )
                     if not importer.dry_run:
                         client = get_r2_client()
                         upload_file(
                             client,
                             bucket=get_bucket_normative(),
-                            key=storage_key,
+                            key=file_path,
                             data=contenuto,
                             content_type="application/pdf",
                         )
-                    riga.storage_key = storage_key
-                    riga.checksum_sha256 = checksum
+                    riga.file_path = file_path
+                    riga.checksum = checksum
                     riga.file_size_kb = len(contenuto) // 1024
                     riga.imported_at = datetime.now(timezone.utc)
                     importer.report.pdf_scaricati += 1
@@ -377,6 +413,7 @@ async def upsert_documento(
         logger.info("[dry-run] %s: %s", azione, documento.titolo)
         return
 
+    riga.categoria_id = categoria_id
     if e_nuovo:
         session.add(riga)
         importer.report.documenti_creati += 1
@@ -400,6 +437,11 @@ async def esegui_import(args: argparse.Namespace) -> None:
 
         totale_processati = 0
         async with AsyncSessionLocal() as session:
+            categoria_id_by_sub_slug: dict[str, int] = {}
+            if not args.dry_run:
+                categoria_id_by_sub_slug = await assicura_categorie(session, categorie)
+                await session.commit()
+
             for categoria in categorie:
                 logger.info(
                     "Categoria: %s / %s", categoria.macro_nome, categoria.sub_nome
@@ -415,6 +457,7 @@ async def esegui_import(args: argparse.Namespace) -> None:
                         await upsert_documento(
                             session,
                             categoria=categoria,
+                            categoria_id=categoria_id_by_sub_slug.get(categoria.sub_slug),
                             documento=documento,
                             importer=importer,
                             recheck_pdf=args.recheck_pdf,
@@ -440,15 +483,15 @@ async def esegui_verify() -> None:
         righe = (
             (
                 await session.execute(
-                    select(NormativaDocumento).where(
-                        NormativaDocumento.storage_key.is_not(None)
+                    select(DocumentoNormativa).where(
+                        DocumentoNormativa.file_path.is_not(None)
                     )
                 )
             )
             .scalars()
             .all()
         )
-    chiavi_db = {r.storage_key for r in righe}
+    chiavi_db = {r.file_path for r in righe}
     logger.info("Record con file su R2 (da DB): %d", len(chiavi_db))
 
     try:
@@ -458,8 +501,8 @@ async def esegui_verify() -> None:
         logger.error("Impossibile verificare R2: %s", exc)
         return
 
-    chiavi_r2 = list_keys(client, bucket=bucket, prefix=f"{R2_PREFIX}/")
-    logger.info("Oggetti trovati su R2 (prefisso %s/): %d", R2_PREFIX, len(chiavi_r2))
+    chiavi_r2 = list_keys(client, bucket=bucket, prefix="")
+    logger.info("Oggetti trovati su R2 nel bucket: %d", len(chiavi_r2))
 
     mancanti_su_r2 = chiavi_db - chiavi_r2
     orfani_su_r2 = chiavi_r2 - chiavi_db

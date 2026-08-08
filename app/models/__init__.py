@@ -6,14 +6,15 @@ configurazione dei mapper lo vedano tramite `Base.metadata`.
 
 from app.models.base import Base, TenantMixin, TimestampMixin
 from app.models.campagna import Campagna, StatoCampagna
+from app.models.categoria_normativa import CategoriaNormativa
 from app.models.comunicazione import (
     CanaleComunicazione,
     Comunicazione,
     StatoComunicazione,
 )
 from app.models.documento import Documento
+from app.models.documento_normativa import DocumentoNormativa
 from app.models.lettura import Lettura
-from app.models.normativa_documento import NormativaDocumento
 from app.models.organizzazione import Organizzazione
 from app.models.refresh_token import RefreshToken
 from app.models.token_azione import TipoTokenAzione, TokenAzione
@@ -33,7 +34,8 @@ __all__ = [
     "StatoComunicazione",
     "Documento",
     "Lettura",
-    "NormativaDocumento",
+    "CategoriaNormativa",
+    "DocumentoNormativa",
     "TokenAzione",
     "TipoTokenAzione",
     "RefreshToken",
