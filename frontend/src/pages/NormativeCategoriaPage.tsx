@@ -18,11 +18,26 @@ export function NormativeCategoriaPage({ nome, argomenti }: CategoriaNormativa) 
         <Card className="mt-8">
           <CardBody>
             <ul className="divide-y divide-silver-200">
-              {argomenti.map((argomento) => (
-                <li key={argomento} className="py-3 text-sm text-brand-950">
-                  {argomento}
-                </li>
-              ))}
+              {argomenti.map((argomento) => {
+                const isLink = typeof argomento !== "string";
+                const nome = isLink ? argomento.nome : argomento;
+                return (
+                  <li key={nome} className="py-3 text-sm text-brand-950">
+                    {isLink ? (
+                      <a
+                        href={argomento.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-brand-600 underline"
+                      >
+                        {nome}
+                      </a>
+                    ) : (
+                      nome
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           </CardBody>
         </Card>

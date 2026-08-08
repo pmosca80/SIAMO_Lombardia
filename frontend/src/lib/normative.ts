@@ -1,7 +1,9 @@
+export type ArgomentoNormativa = string | { nome: string; url: string };
+
 export type CategoriaNormativa = {
   slug: string;
   nome: string;
-  argomenti: string[];
+  argomenti: ArgomentoNormativa[];
 };
 
 export const CATEGORIE_NORMATIVE: CategoriaNormativa[] = [
@@ -10,7 +12,7 @@ export const CATEGORIE_NORMATIVE: CategoriaNormativa[] = [
     nome: "Amministrazione",
     argomenti: [
       "Cfi - Cfg",
-      "Bilinguismo",
+      { nome: "Bilinguismo", url: "https://www.siamoesercito.org/index.php/taxonomy/term/191" },
       "Concertazione economica e normativa decreti ministeriali",
       "Cud - Dichiarazione Redditi",
       "Danno erariale",
