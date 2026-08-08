@@ -51,6 +51,18 @@ class Settings(BaseSettings):
     # Se non impostato, Sentry resta disattivato (es. in sviluppo locale).
     sentry_dsn: str | None = None
 
+    # --- Cloudflare R2 (storage per scripts/import_normative.py) ---
+    r2_account_id: str | None = None
+    r2_access_key_id: str | None = None
+    r2_secret_access_key: str | None = None
+    r2_bucket_normative: str | None = None
+    r2_public_base_url: str | None = None
+
+    # --- Credenziali importer normative (account siamoesercito.org con
+    # permesso di lettura degli allegati, richiesti da Drupal via login) ---
+    siamoesercito_username: str | None = None
+    siamoesercito_password: str | None = None
+
     @field_validator("database_url")
     @classmethod
     def _force_async_driver(cls, value: str) -> str:
