@@ -19,21 +19,26 @@ export function NormativeCategoriaPage({ nome, argomenti }: CategoriaNormativa) 
           <CardBody>
             <ul className="divide-y divide-silver-200">
               {argomenti.map((argomento) => {
-                const isLink = typeof argomento !== "string";
-                const nome = isLink ? argomento.nome : argomento;
+                const hasDocumenti = typeof argomento !== "string";
+                const nome = hasDocumenti ? argomento.nome : argomento;
                 return (
                   <li key={nome} className="py-3 text-sm text-brand-950">
-                    {isLink ? (
-                      <a
-                        href={argomento.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-brand-600 underline"
-                      >
-                        {nome}
-                      </a>
-                    ) : (
-                      nome
+                    {nome}
+                    {hasDocumenti && (
+                      <ul className="mt-2 space-y-1 pl-4">
+                        {argomento.documenti.map((doc) => (
+                          <li key={doc.url}>
+                            <a
+                              href={doc.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-brand-600 underline"
+                            >
+                              {doc.titolo}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
                     )}
                   </li>
                 );

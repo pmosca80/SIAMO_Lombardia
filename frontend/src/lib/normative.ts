@@ -1,4 +1,6 @@
-export type ArgomentoNormativa = string | { nome: string; url: string };
+export type DocumentoNormativa = { titolo: string; url: string };
+
+export type ArgomentoNormativa = string | { nome: string; documenti: DocumentoNormativa[] };
 
 export type CategoriaNormativa = {
   slug: string;
@@ -12,7 +14,15 @@ export const CATEGORIE_NORMATIVE: CategoriaNormativa[] = [
     nome: "Amministrazione",
     argomenti: [
       "Cfi - Cfg",
-      { nome: "Bilinguismo", url: "https://www.siamoesercito.org/index.php/taxonomy/term/191" },
+      {
+        nome: "Bilinguismo",
+        documenti: [
+          {
+            titolo: "Indennità di 2 lingua. Legge 23 ottobre 1961, n. 1165",
+            url: "https://www.siamoesercito.org/index.php/indennita-di-2-lingua-legge-23-ottobre-1961-n-1165",
+          },
+        ],
+      },
       "Concertazione economica e normativa decreti ministeriali",
       "Cud - Dichiarazione Redditi",
       "Danno erariale",
