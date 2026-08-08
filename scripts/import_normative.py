@@ -1,4 +1,4 @@
-"""Importer standalone: archivio Normative di siamoesercito.org -> R2 + Postgres.
+"""Importer standalone: archivio Normative di siamoesercito.org -> repository + Postgres.
 
 Uso:
     python scripts/import_normative.py [--categoria SLUG] [--limit N]
@@ -9,6 +9,10 @@ Le pagine HTML del sito sono pubbliche; i PDF allegati richiedono invece un
 account autenticato (Drupal serve /system/files/... solo agli utenti
 loggati). Se SIAMOESERCITO_USERNAME/PASSWORD non sono configurati in .env,
 lo script importa comunque tutti i metadati ma salta il download dei PDF.
+
+I PDF scaricati vengono salvati direttamente nel repository, sotto
+app/static/normative/<macro>/<sub>/<slug>.pdf, per essere committati su
+Git insieme al codice (nessuno storage esterno).
 
 Non è collegato all'app FastAPI: usa AsyncSessionLocal direttamente, fuori
 dal ciclo di vita delle request.
@@ -35,13 +39,6 @@ from sqlalchemy import select
 
 from app.core.config import settings
 from app.core.database import AsyncSessionLocal
-from app.core.storage_r2 import (
-    R2NonConfigurato,
-    get_bucket_normative,
-    get_r2_client,
-    list_keys,
-    upload_file,
-)
 from app.models.categoria_normativa import CategoriaNormativa
 from app.models.documento_normativa import DocumentoNormativa
 
@@ -49,6 +46,7 @@ BASE_URL = "https://www.siamoesercito.org"
 INDEX_URL = f"{BASE_URL}/index.php/normative"
 LOGIN_URL = f"{BASE_URL}/index.php/user/login"
 USER_AGENT = "SIAMO-Lombardia-ImportBot/1.0 (+contatto: pmosca80@gmail.com)"
+STATIC_NORMATIVE_DIR = Path(__file__).resolve().parent.parent / "app" / "static" / "normative"
 
 logging.basicConfig(
     level=logging.INFO,
@@ -392,14 +390,9 @@ async def upsert_documento(
                         f"{categoria.macro_slug}/{categoria.sub_slug}/{nome_file}.pdf"
                     )
                     if not importer.dry_run:
-                        client = get_r2_client()
-                        upload_file(
-                            client,
-                            bucket=get_bucket_normative(),
-                            key=file_path,
-                            data=contenuto,
-                            content_type="application/pdf",
-                        )
+                        percorso_assoluto = STATIC_NORMATIVE_DIR / file_path
+                        percorso_assoluto.parent.mkdir(parents=True, exist_ok=True)
+                        percorso_assoluto.write_bytes(contenuto)
                     riga.file_path = file_path
                     riga.checksum = checksum
                     riga.file_size_kb = len(contenuto) // 1024
@@ -491,32 +484,31 @@ async def esegui_verify() -> None:
             .scalars()
             .all()
         )
-    chiavi_db = {r.file_path for r in righe}
-    logger.info("Record con file su R2 (da DB): %d", len(chiavi_db))
+    percorsi_db = {r.file_path for r in righe}
+    logger.info("Record con file su disco (da DB): %d", len(percorsi_db))
 
-    try:
-        client = get_r2_client()
-        bucket = get_bucket_normative()
-    except R2NonConfigurato as exc:
-        logger.error("Impossibile verificare R2: %s", exc)
-        return
+    if STATIC_NORMATIVE_DIR.is_dir():
+        percorsi_disco = {
+            p.relative_to(STATIC_NORMATIVE_DIR).as_posix()
+            for p in STATIC_NORMATIVE_DIR.rglob("*.pdf")
+        }
+    else:
+        percorsi_disco = set()
+    logger.info("File .pdf trovati in %s: %d", STATIC_NORMATIVE_DIR, len(percorsi_disco))
 
-    chiavi_r2 = list_keys(client, bucket=bucket, prefix="")
-    logger.info("Oggetti trovati su R2 nel bucket: %d", len(chiavi_r2))
+    mancanti_su_disco = percorsi_db - percorsi_disco
+    orfani_su_disco = percorsi_disco - percorsi_db
 
-    mancanti_su_r2 = chiavi_db - chiavi_r2
-    orfani_su_r2 = chiavi_r2 - chiavi_db
-
-    if mancanti_su_r2:
-        logger.warning("Record DB senza file su R2 (%d):", len(mancanti_su_r2))
-        for chiave in sorted(mancanti_su_r2):
-            logger.warning("  %s", chiave)
-    if orfani_su_r2:
-        logger.warning("File su R2 senza record DB (%d):", len(orfani_su_r2))
-        for chiave in sorted(orfani_su_r2):
-            logger.warning("  %s", chiave)
-    if not mancanti_su_r2 and not orfani_su_r2:
-        logger.info("Integrità OK: DB e R2 allineati.")
+    if mancanti_su_disco:
+        logger.warning("Record DB senza file su disco (%d):", len(mancanti_su_disco))
+        for percorso in sorted(mancanti_su_disco):
+            logger.warning("  %s", percorso)
+    if orfani_su_disco:
+        logger.warning("File su disco senza record DB (%d):", len(orfani_su_disco))
+        for percorso in sorted(orfani_su_disco):
+            logger.warning("  %s", percorso)
+    if not mancanti_su_disco and not orfani_su_disco:
+        logger.info("Integrità OK: DB e filesystem allineati.")
 
 
 def main() -> None:
@@ -524,14 +516,14 @@ def main() -> None:
     parser.add_argument("--categoria", help="Limita a una sotto-categoria (slug)")
     parser.add_argument("--limit", type=int, help="Numero massimo di documenti da processare")
     parser.add_argument("--delay", type=float, default=1.5, help="Secondi di attesa tra le richieste HTTP")
-    parser.add_argument("--dry-run", action="store_true", help="Non scrive su DB/R2, solo log")
+    parser.add_argument("--dry-run", action="store_true", help="Non scrive su DB/disco, solo log")
     parser.add_argument(
         "--recheck-pdf",
         action="store_true",
         help="Ri-scarica e ricalcola il checksum anche per documenti già importati",
     )
     parser.add_argument(
-        "--verify", action="store_true", help="Verifica integrità DB vs R2 e termina"
+        "--verify", action="store_true", help="Verifica integrità DB vs filesystem e termina"
     )
     args = parser.parse_args()
 
